@@ -13,7 +13,7 @@ from pymatgen.io.xyz import XYZ
 from pymatgen.core import structure
 from pymatgen.core.sites import PeriodicSite
 from pymatgen.core import Site
-from pymatgen import Lattice, Structure, Molecule
+# from pymatgen import Lattice, Structure, Molecule
 import yaml
 from pymatgen.io.vasp import Poscar, sets
 from string import digits
@@ -217,16 +217,16 @@ def site_bonded(site1, site2, bond_length):
     bond_types_general = known_bond_types()
     for each in bond_types_general:
         if each[0].translate(
-                None,
+                # None,
                 digits) == site1type and each[1].translate(
-                None,
+                # None,
                 digits) == site2type:
             if bond_length >= lower_range and bond_length <= upper_range:
                 return True
         if each[0].translate(
-                None,
+                # None,
                 digits) == site2type and each[1].translate(
-                None,
+                # None,
                 digits) == site1type:
             if bond_length >= lower_range and bond_length <= upper_range:
                 return True
@@ -290,7 +290,7 @@ def type_assignment(siteval, level, order_assign_number):
         i += 1
 
     # Check if atomic species is correct for the order asign number.
-    if types[order_assign_number].translate(None, digits) == sites[
+    if types[order_assign_number].translate(digits) == sites[
             siteval].species_string:
         bonded_atoms, nn_types = atom_sites[siteval].bonds, []
 
@@ -303,7 +303,7 @@ def type_assignment(siteval, level, order_assign_number):
             # Level 1: Remove type from atom to get species
             if level == 1:
                 # Level 1: Assign based on atomic species.
-                nn_types.append(atom_sites[each].type.translate(None, digits))
+                nn_types.append(atom_sites[each].type.translate(digits))
             # Level 2: Assigned based on type attached.
             if level == 2:
                 nn_types.append(atom_sites[each].type)
@@ -417,18 +417,19 @@ def generate_DATA_FILE():
     zhi = math.sqrt(math.pow(LA.norm(Z), 2) -
                     math.pow(xz, 2) - math.pow(yz, 2))
     # -0.5 0.5 xlo xhi       #(for periodic systems this is box size,
-    print(str(len(atom_sites)) + " " + str(xlo) +
+    print(str(xlo) +
           " " + str(xhi) + " xlo xhi", file=f)
     # -0.5 0.5 ylo yhi       # for non-periodic it is min/max extent of atoms)
-    print(str(len(atom_sites)) + " " + str(ylo) +
+    print(str(ylo) +
           " " + str(yhi) + " ylo yhi", file=f)
     # -0.5 0.5 zlo zhi       #(do not include this line for 2-d simulations)
-    print(str(len(atom_sites)) + " " + str(zlo) +
+    print(str(zlo) +
           " " + str(zhi) + " zlo zhi", file=f)
 
     save_BLANK_LINES(1, f)
 
     print("Masses", file=f)
+    save_BLANK_LINES(1, f)
     gen, i = known_atom_types_general(), 1
     for each in gen:
         print(str(i) + " " + str(each[3]), file=f)
@@ -441,6 +442,7 @@ def generate_DATA_FILE():
     # Bond Coeffs, ENERGY [kcal/mol/A^2], LENGTH [A]
     save_BLANK_LINES(1, f)
     print("Bond Coeffs", file=f)
+    save_BLANK_LINES(1, f)
     bonds, i = known_bond_types(), 1
     for each in bonds:
         print(str(i) + " " + str(each[2]) + " " + str(each[3]), file=f)
@@ -449,6 +451,7 @@ def generate_DATA_FILE():
     #ANGLES (BENDING), ENERGY [kcal/mol/rad^2], THETA [deg]
     save_BLANK_LINES(1, f)
     print("Angle Coeffs", file=f)
+    save_BLANK_LINES(1, f)
     angles, i = known_angle_types(), 1
     for each in angles:
         print(str(i) + " " + str(each[3]) + " " + str(each[4]), file=f)
@@ -457,6 +460,7 @@ def generate_DATA_FILE():
     # PROPER TORSIONS, ENERGY [kcal/mol], ANGLE [deg]
     save_BLANK_LINES(1, f)
     print("Dihedral Coeffs", file=f)
+    save_BLANK_LINES(1, f)
     torsions, i = known_torsion_types(), 1
     for each in torsions:
         print(str(i) + " " + str(each[4]) + " " +
@@ -465,7 +469,8 @@ def generate_DATA_FILE():
 
     # ATOMS
     save_BLANK_LINES(1, f)
-    print("Atoms", file=f)
+    print("Atoms # full", file=f)
+    save_BLANK_LINES(1, f)
     i = 1
     katg = known_atom_types_general()
     molecule_number = 1
@@ -487,13 +492,14 @@ def generate_DATA_FILE():
               " " +
               str(coords[1]) +
               " " +
-              str(coords[2]) +
-              " 0 0 0", file=f)
+              str(coords[2]), file=f)
+            #   " 0 0 0", file=f)
         i += 1
 
     # Velocities, ADD IF NEEDED
     save_BLANK_LINES(1, f)
     print("Velocities", file=f)
+    save_BLANK_LINES(1, f)
     i = 1
     for each in atom_sites:
         print(str(i) + " 0 0 0", file=f)
@@ -502,6 +508,7 @@ def generate_DATA_FILE():
     # Bonds
     save_BLANK_LINES(1, f)
     print("Bonds", file=f)
+    save_BLANK_LINES(1, f)
     i = 1
     site_number = 1
     bonds_added = []
@@ -517,6 +524,7 @@ def generate_DATA_FILE():
     # Angles
     save_BLANK_LINES(1, f)
     print("Angles", file=f)
+    save_BLANK_LINES(1, f)
     i = 1
     site_number = 1
     for each in atom_sites:
@@ -541,6 +549,7 @@ def generate_DATA_FILE():
     # Dihedrals
     save_BLANK_LINES(1, f)
     print("Dihedrals", file=f)
+    save_BLANK_LINES(1, f)
     i = 1
     site_number = 1
     for each in atom_sites:
@@ -566,8 +575,8 @@ def generate_DATA_FILE():
         site_number = site_number + 1
 
     # Impropers
-    save_BLANK_LINES(1, f)
-    print("Impropers", file=f)
+    # save_BLANK_LINES(1, f)
+    # print("Impropers", file=f)
     # If you need this functionality, feel free to add this feature and then
     # request a merge to the main branch.
 
@@ -684,7 +693,8 @@ class StructureSite:
 #-------------- Import Config File -----------
 global config
 with open("config", 'r') as ymlfile:
-    config = yaml.load(ymlfile)
+    # print(ymlfile)
+    config = yaml.safe_load(ymlfile)
 
 #-------------- Load in Structure -------------
 global structure
@@ -736,8 +746,8 @@ for order_assign_number in position_order_assignment:
         type_assignment(siteval, level, order_assign_number)
         siteval += 1
     print(atom_sites[0].bonds, atom_sites[0].type)
-    print(atom_sites[173].type, atom_sites[116].type,
-          atom_sites[116].type, atom_sites[119].type)
+    # print(atom_sites[173].type, atom_sites[116].type,
+    #       atom_sites[116].type, atom_sites[119].type)
 #------------- Bond Type Assignment ----------------
 for i in range(0, len(nn_sites)):
     bond_type_assignment(i)
