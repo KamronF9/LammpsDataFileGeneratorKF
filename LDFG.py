@@ -497,13 +497,13 @@ def generate_DATA_FILE():
         i += 1
 
     # Velocities, ADD IF NEEDED
-    save_BLANK_LINES(1, f)
-    print("Velocities", file=f)
-    save_BLANK_LINES(1, f)
-    i = 1
-    for each in atom_sites:
-        print(str(i) + " 0 0 0", file=f)
-        i += 1
+    # save_BLANK_LINES(1, f)
+    # print("Velocities", file=f)
+    # save_BLANK_LINES(1, f)
+    # i = 1
+    # for each in atom_sites:
+    #     print(str(i) + " 0 0 0", file=f)
+    #     i += 1
 
     # Bonds
     save_BLANK_LINES(1, f)
