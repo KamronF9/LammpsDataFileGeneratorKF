@@ -101,12 +101,12 @@ bonds:
   i: H
   j: O
   ENERGY: 1086.0
-  LENGTH: 1.0
+  LENGTH: 0.9
  5:
   i: C
   j: S
   ENERGY: 680.0
-  LENGTH: 1.48
+  LENGTH: 1.8
   
   
 

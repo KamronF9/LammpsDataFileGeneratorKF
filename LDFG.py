@@ -90,10 +90,12 @@ def known_torsion_types():
 
 def max_bond_length():
     max_bond_length = 0
+    # print(known_bond_types())
     for each in known_bond_types():
         bond_length = each[3]
         if bond_length > max_bond_length:
             max_bond_length = bond_length
+        # print(each, max_bond_length)
     return float(max_bond_length + max_bond_length *
                  config['bond_length_tolerance_factor'])
 
@@ -210,26 +212,24 @@ def site_bonded(site1, site2, bond_length):
     """
     site1type = atom_sites[site1].type
     site2type = atom_sites[site2].type
-    upper_range = bond_length + bond_length * \
-        float(config['bond_length_tolerance_factor'])
-    lower_range = bond_length - bond_length * \
-        float(config['bond_length_tolerance_factor'])
+    # upper_range = bond_length + bond_length * \
+    #     float(config['bond_length_tolerance_factor'])
+    # lower_range = bond_length - bond_length * \
+    #     float(config['bond_length_tolerance_factor'])
+
     bond_types_general = known_bond_types()
+    # print(bond_types_general)
+    # print('--',site1type, site2type, upper_range, lower_range, bond_types_general, bond_length)
     for each in bond_types_general:
-        if each[0].translate(
-                # None,
-                digits) == site1type and each[1].translate(
-                # None,
-                digits) == site2type:
-            if bond_length >= lower_range and bond_length <= upper_range:
+        # print(each) # ('C', 'S', 680.0, 1.48)
+        # print(each[0], each[0].translate(digits), site1type)      
+
+        if each[0].translate(digits) == site1type and each[1].translate(digits) == site2type:
+            if bond_length <= each[3] * (1+float(config['bond_length_tolerance_factor'])):
                 return True
-        if each[0].translate(
-                # None,
-                digits) == site2type and each[1].translate(
-                # None,
-                digits) == site1type:
-            if bond_length >= lower_range and bond_length <= upper_range:
-                return True
+        # if each[0].translate(digits) == site2type and each[1].translate(digits) == site1type:
+        #     if bond_length <= upper_range:
+                # return True
     return False
 
 # Checks for digits within an input string
@@ -728,12 +728,16 @@ for each in atom_types_general:
 
 #--------- Find Nearest Neighbors -------------
 nn_sites = structure.get_all_neighbors(max_bond_length(), include_index=True)
+# print('nn_sites',nn_sites[0])
 #------------- Bonded Atoms Assignment ----------------
 # Iterates through each position assignment for Bond Assignment.
 siteval = 0
 for each_site in nn_sites:
+    # print(each_site)
+    # exit()
     for each in each_site:
         if site_bonded(siteval, each[2], each[1]):
+            # print(each[2], each[1])
             atom_sites[siteval].add_bond(each[2], None, each[1])
     siteval += 1
 
