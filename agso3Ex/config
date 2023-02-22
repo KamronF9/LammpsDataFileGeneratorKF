@@ -12,7 +12,7 @@ filename: 'ag+1so3.vasp'
 structure_type: 'vasp'
 
 #General Settings
-bond_length_tolerance_factor: 0.5 # 0.015 #fractional
+bond_length_tolerance_factor: 0.2 #0.5 # 0.015 #fractional
 angle_tolerance_factor: 30 #Degrees
 torsion_tolerance_factor: 30 #Degrees
 # 8.598994255099999  0.000000000000000  0.000000000000000
@@ -20,8 +20,8 @@ torsion_tolerance_factor: 30 #Degrees
 # 0.000000000000000  0.000000000000000 30.000000000000000
 
 lattice_parameters:
- vectors: {i:[26.5326, 0, 0], j:[0, 24.4848, 0], k:[0, -2.1335, 17.9254]}
- angles: {a: 26.53263,b: 24.48479,c: 18.05191, alpha: 96.7874 ,beta: 90.0 ,gamma: 90.0} 
+ vectors: {i:[8.6, 0, 0], j:[4.3, 7.45, 0], k:[0, 0, 30.]}
+ angles: {alpha: 90. ,beta: 90.0 ,gamma: 60.0} 
 
 
 #ATOM TYPES, CHARGES [e], LJ PARAMETERS [sigma A, epsilon kcal/mol], MASS [g/mol], CONNECTORS

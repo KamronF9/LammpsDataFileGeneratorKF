@@ -398,33 +398,40 @@ def generate_DATA_FILE():
     print("0 improper types", file=f)
 
     save_BLANK_LINES(1, f)
+    # print("ITEM: BOX BOUNDS xy xz yz pp pp pp", file=f)
+    # save_BLANK_LINES(1, f)
 
     X = config["lattice_parameters"]["vectors"]['i']
     Y = config["lattice_parameters"]["vectors"]['j']
     Z = config["lattice_parameters"]["vectors"]['k']
-    alpha = math.radians(config["lattice_parameters"]["angles"]['alpha'])
-    beta = math.radians(config["lattice_parameters"]["angles"]['beta'])
-    gamma = math.radians(config["lattice_parameters"]["angles"]['gamma'])
+    # alpha = math.radians(config["lattice_parameters"]["angles"]['alpha'])
+    # beta = math.radians(config["lattice_parameters"]["angles"]['beta'])
+    # gamma = math.radians(config["lattice_parameters"]["angles"]['gamma'])
     xlo = 0
     ylo = 0
     zlo = 0
-    xhi = LA.norm(X)
-    xy = LA.norm(Y) * math.cos(gamma)
-    yhi = LA.norm(Y) * math.sin(gamma)
-    xz = LA.norm(Z) * math.cos(beta)
+    xhi = X[0]
+    yhi = Y[1]
+    zhi = Z[2]
+    xy = Y[0]
+    xz = Z[0]
+    yz = Z[1]
+    # xhi = LA.norm(X)
+    # xy = LA.norm(Y) * math.cos(gamma)
+    # yhi = LA.norm(Y) * math.sin(gamma)
+    # xz = LA.norm(Z) * math.cos(beta)
     # Was yz changed to xz, veryify this was a typo. -Pueschel
-    yz = (np.dot(Y, Z) - xy * xz) / yhi
-    zhi = math.sqrt(math.pow(LA.norm(Z), 2) -
-                    math.pow(xz, 2) - math.pow(yz, 2))
+    # yz = (np.dot(Y, Z) - xy * xz) / yhi
+    # zhi = math.sqrt(math.pow(LA.norm(Z), 2) -
+                    # math.pow(xz, 2) - math.pow(yz, 2))
     # -0.5 0.5 xlo xhi       #(for periodic systems this is box size,
-    print(str(xlo) +
-          " " + str(xhi) + " xlo xhi", file=f)
+    print(f'{str(xlo)} {str(xhi)} xlo xhi', file=f)
     # -0.5 0.5 ylo yhi       # for non-periodic it is min/max extent of atoms)
-    print(str(ylo) +
-          " " + str(yhi) + " ylo yhi", file=f)
+    print(f'{str(ylo)} {str(yhi)} ylo yhi', file=f)
     # -0.5 0.5 zlo zhi       #(do not include this line for 2-d simulations)
-    print(str(zlo) +
-          " " + str(zhi) + " zlo zhi", file=f)
+    print(f'{str(zlo)} {str(zhi)} zlo zhi', file=f)
+    print(f'{str(xy)} {str(xz)} {str(yz)} xy xz yz', file=f)
+
 
     save_BLANK_LINES(1, f)
 
