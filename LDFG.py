@@ -224,7 +224,7 @@ def site_bonded(site1, site2, bond_length):
         # print(each) # ('C', 'S', 680.0, 1.48)
         # print(each[0], each[0].translate(digits), site1type)      
 
-        if each[0].translate(digits) == site1type and each[1].translate(digits) == site2type:
+        if each[0] == site1type and each[1] == site2type:
             if bond_length <= each[3] * (1+float(config['bond_length_tolerance_factor'])):
                 return True
         # if each[0].translate(digits) == site2type and each[1].translate(digits) == site1type:

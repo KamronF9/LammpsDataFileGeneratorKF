@@ -25,53 +25,56 @@ lattice_parameters:
 
 
 #ATOM TYPES, CHARGES [e], LJ PARAMETERS [sigma A, epsilon kcal/mol], MASS [g/mol], CONNECTORS
+#   in lammps order is eps then sigma
 types:
  Ag:
-  CHARGES: -0.2800
+  CHARGES: 0.0
   LJ_PARAMETERS:
-   0: 3.261
-   1: 0.0373
-  MASS: 1.0
+   0: 59.578
+   1: 38.043
+  MASS: 107.87
   REQUIRED_CONNECTORS: 
    0: None
  S:
-  CHARGES: -0.2800
+  CHARGES: 0.0
   LJ_PARAMETERS:
-   0: 3.261
-   1: 0.0373
-  MASS: 2.0
+   0: 1.01
+   1: .306
+  MASS: 32.06
   REQUIRED_CONNECTORS: 
    0: None
+#membrane
  O:
-  CHARGES: -0.2800
+  CHARGES: 0.0
   LJ_PARAMETERS:
-   0: 3.261
-   1: 0.0373
-  MASS: 3.0
+   0: .85
+   1: .085
+  MASS: 16.0
   REQUIRED_CONNECTORS: 
    0: None
+# C1
  C:
-  CHARGES: 0.1481
+  CHARGES: 0.0
   LJ_PARAMETERS:
-   0: 2.571
-   1: 0.0238
-  MASS: 4.0
+   0: 0.97
+   1: .075
+  MASS: 12.01
   REQUIRED_CONNECTORS:
    0: None
  F:
-  CHARGES: -0.2800
+  CHARGES: 0.0
   LJ_PARAMETERS:
-   0: 3.261
-   1: 0.0373
-  MASS: 5.0
+   0: .85
+   1: .044
+  MASS: 19.0
   REQUIRED_CONNECTORS: 
    0: None
  H:
-  CHARGES: -0.2800
+  CHARGES: 0.0
   LJ_PARAMETERS:
-   0: 3.261
-   1: 0.0373
-  MASS: 6.0
+   0: .225
+   1: .0089
+  MASS: 1.01
   REQUIRED_CONNECTORS: 
    0: None
 
@@ -80,13 +83,13 @@ bonds:
  0:
   i: O
   j: S
-  ENERGY: 680.0
+  ENERGY: 700.
   LENGTH: 1.48
  1:
   i: C
   j: C
   ENERGY: 429.3
-  LENGTH: 1.53
+  LENGTH: 1.50
  2:
   i: C
   j: F
@@ -96,21 +99,21 @@ bonds:
   i: C
   j: O
   ENERGY: 700.0
-  LENGTH: 1.43
+  LENGTH: 1.42
  4:
   i: H
   j: O
   ENERGY: 1086.0
-  LENGTH: 0.9
+  LENGTH: 1.0
  5:
   i: C
   j: S
-  ENERGY: 680.0
+  ENERGY: 700.
   LENGTH: 1.8
   
   
 
-
+#LO
 #ANGLES (BENDING), ENERGY [kcal/mol/rad^2], THETA [deg]
 angles:
  0:
