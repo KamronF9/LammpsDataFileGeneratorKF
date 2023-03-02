@@ -433,6 +433,46 @@ def generate_DATA_FILE():
     print(f'{str(xy)} {str(xz)} {str(yz)} xy xz yz', file=f)
 
 
+
+    # ATOMS
+    save_BLANK_LINES(1, f)
+    print("Atoms # full", file=f)
+    save_BLANK_LINES(1, f)
+    i = 1
+    katg = known_atom_types_general()
+    molecule_number = 1
+    sites = structure.sites
+    for each in atom_sites:
+        type_of_atom = atom_type_NUMBER(each.type)
+        coords = sites[i - 1].coords
+        katg_each = katg[type_of_atom]
+        print(str(i) +
+              " " +
+              str(molecule_number) +
+              " " +
+              str(type_of_atom +
+                  1) +
+              " " +
+              str(katg_each[1]) +
+              " " +
+              str(coords[0]) +
+              " " +
+              str(coords[1]) +
+              " " +
+              str(coords[2]), file=f)
+            #   " 0 0 0", file=f)
+        i += 1
+
+    # Velocities, ADD IF NEEDED
+    # save_BLANK_LINES(1, f)
+    # print("Velocities", file=f)
+    # save_BLANK_LINES(1, f)
+    # i = 1
+    # for each in atom_sites:
+    #     print(str(i) + " 0 0 0", file=f)
+    #     i += 1
+
+
     save_BLANK_LINES(1, f)
 
     print("Masses", file=f)
@@ -473,44 +513,6 @@ def generate_DATA_FILE():
         print(str(i) + " " + str(each[4]) + " " +
               str(each[5]) + " " + str(each[6]), file=f)
         i += 1
-
-    # ATOMS
-    save_BLANK_LINES(1, f)
-    print("Atoms # full", file=f)
-    save_BLANK_LINES(1, f)
-    i = 1
-    katg = known_atom_types_general()
-    molecule_number = 1
-    sites = structure.sites
-    for each in atom_sites:
-        type_of_atom = atom_type_NUMBER(each.type)
-        coords = sites[i - 1].coords
-        katg_each = katg[type_of_atom]
-        print(str(i) +
-              " " +
-              str(molecule_number) +
-              " " +
-              str(type_of_atom +
-                  1) +
-              " " +
-              str(katg_each[1]) +
-              " " +
-              str(coords[0]) +
-              " " +
-              str(coords[1]) +
-              " " +
-              str(coords[2]), file=f)
-            #   " 0 0 0", file=f)
-        i += 1
-
-    # Velocities, ADD IF NEEDED
-    # save_BLANK_LINES(1, f)
-    # print("Velocities", file=f)
-    # save_BLANK_LINES(1, f)
-    # i = 1
-    # for each in atom_sites:
-    #     print(str(i) + " 0 0 0", file=f)
-    #     i += 1
 
     # Bonds
     save_BLANK_LINES(1, f)
