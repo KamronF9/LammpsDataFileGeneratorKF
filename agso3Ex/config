@@ -24,22 +24,25 @@ lattice_parameters:
  angles: {alpha: 90. ,beta: 90.0 ,gamma: 60.0} 
 
 
-#ATOM TYPES, CHARGES [e], LJ PARAMETERS [sigma A, epsilon kcal/mol], MASS [g/mol], CONNECTORS
+#ATOM TYPES, CHARGES [e], LJ PARAMETERS [R0 A, D0 kcal/mol], MASS [g/mol], CONNECTORS
 #   in lammps order is eps then sigma
+# ** note conversion from D0 to epsilon and R0 to sigma in script
+# R0=2^1/6*sigma
+# D0=4*epsilon
 types:
  Ag:
   CHARGES: 0.0
   LJ_PARAMETERS:
-   0: 59.578
-   1: 38.043
+   0: 2.9
+   1: 152.2
   MASS: 107.87
   REQUIRED_CONNECTORS: 
    0: None
  S:
   CHARGES: 0.0
   LJ_PARAMETERS:
-   0: 1.01
-   1: .306
+   0: 4.03
+   1: .344
   MASS: 32.06
   REQUIRED_CONNECTORS: 
    0: None
@@ -47,8 +50,8 @@ types:
  O:
   CHARGES: 0.0
   LJ_PARAMETERS:
-   0: .85
-   1: .085
+   0: 3.40
+   1: .096
   MASS: 16.0
   REQUIRED_CONNECTORS: 
    0: None
@@ -56,24 +59,24 @@ types:
  C:
   CHARGES: 0.0
   LJ_PARAMETERS:
-   0: 0.97
-   1: .075
+   0: 3.88
+   1: .0844
   MASS: 12.01
   REQUIRED_CONNECTORS:
    0: None
  F:
   CHARGES: 0.0
   LJ_PARAMETERS:
-   0: .85
-   1: .044
+   0: 3.40
+   1: .050
   MASS: 19.0
   REQUIRED_CONNECTORS: 
    0: None
  H:
   CHARGES: 0.0
   LJ_PARAMETERS:
-   0: .225
-   1: .0089
+   0: .9
+   1: .01
   MASS: 1.01
   REQUIRED_CONNECTORS: 
    0: None
@@ -101,52 +104,91 @@ bonds:
   ENERGY: 700.0
   LENGTH: 1.42
  4:
-  i: H
-  j: O
-  ENERGY: 1086.0
-  LENGTH: 1.0
- 5:
   i: C
   j: S
   ENERGY: 700.
   LENGTH: 1.8
-  
+#  4:
+#   i: H
+#   j: O
+#   ENERGY: 500.
+#   LENGTH: 1.0  
   
 
-#LO
 #ANGLES (BENDING), ENERGY [kcal/mol/rad^2], THETA [deg]
 angles:
  0:
-  i: S
-  j: O
-  k: S
-  ENERGY: 70.0
-  THETA: 149.43
+  i: O
+  j: S
+  k: O
+  ENERGY: 350.
+  THETA: 115.5
+#  1:
+#   i: O
+#   j: S
+#   k: C
+#   ENERGY: 350.
+#   THETA: 109.5
+#  2:
+#   i: S
+#   j: C
+#   k: F
+#   ENERGY: 100.
+#   THETA: 109.5
+#  3:
+#   i: C
+#   j: C
+#   k: F
+#   ENERGY: 100.3
+#   THETA: 118.3
+#  4:
+#   i: F
+#   j: C
+#   k: F
+#   ENERGY: 108.2
+#   THETA: 121.5
+#  5:
+#   i: H
+#   j: O
+#   k: H
+#   ENERGY: 120.
+#   THETA: 109.5
+ 
+
 
 #PROPER TORSIONS, ENERGY [kcal/mol], ANGLE [deg], MULTIPLICITY [m] how many ways to configure?
 propertorsions:
  0:
   i: S
-  j: O
-  k: S
+  j: C
+  k: C
   l: O
-  ENERGY: 4.80
-  ANGLE: 38.89
+  ENERGY: 2.0
+  ANGLE: 0.
   MULTIPLICITY: 1
  1:
-  i: S
-  j: O
-  k: S
-  l: O
+  i: F
+  j: C
+  k: O
+  l: C
   ENERGY: 4.80
-  ANGLE: 24.2875
+  ANGLE: 0.
   MULTIPLICITY: 1
  2:
-  i: S
-  j: O
+  i: C
+  j: C
   k: S
   l: O
   ENERGY: 4.80
-  ANGLE: 158.6827
+  ANGLE: 0.
   MULTIPLICITY: 1
+ 3:
+  i: F
+  j: C
+  k: S
+  l: O
+  ENERGY: 4.80
+  ANGLE: 0.
+  MULTIPLICITY: 1
+  
 
