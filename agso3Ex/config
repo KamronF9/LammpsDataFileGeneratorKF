@@ -147,6 +147,24 @@ angles:
   k: F
   ENERGY: 108.2
   THETA: 121.5
+ 5:
+  i: S
+  j: C
+  k: C
+  ENERGY: 100.
+  THETA: 109.5
+ 6:
+  i: C
+  j: C
+  k: O
+  ENERGY: 100.
+  THETA: 109.5
+ 5:
+  i: O
+  j: C
+  k: F
+  ENERGY: 100.
+  THETA: 109.5
 #  5:
 #   i: H
 #   j: O

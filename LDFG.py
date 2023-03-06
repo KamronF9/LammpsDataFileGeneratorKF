@@ -547,18 +547,10 @@ def generate_DATA_FILE():
     for each in atom_sites:
         ii = 0
         for every in each.angles:
-            print(str(i) +
-                  " " +
-                  str(each.angle_types[ii] +
-                      1) +
-                  " " +
-                  str(site_number) +
-                  " " +
-                  str(every[1] +
-                      1) +
-                  " " +
-                  str(every[2] +
-                      1), file=f)
+            print(f'{str(i)} {str(each.angle_types[ii] + 1)} {str(site_number)} '
+            f'{str(every[1] + 1)} {str(every[2] + 1)} # '
+            f'{atom_sites[site_number-1].type} {atom_sites[every[1]].type} '
+            f'{atom_sites[every[2]].type}', file=f)  # index for atom sites is ahead by 1
             ii = ii + 1
             i += 1
         site_number = site_number + 1
@@ -574,8 +566,8 @@ def generate_DATA_FILE():
         for every in each.dihedrals:
             print(f'{str(i)} {str(each.dihedral_types[ii] + 1)} {str(site_number)} '
             f'{str(every[1] + 1)} {str(every[2] + 1)} {str(every[3] + 1)} # '
-            f'{atom_sites[site_number-1].type} {atom_sites[every[1] + 0].type} '
-            f'{atom_sites[every[2] + 0].type} {atom_sites[every[3] + 0].type}', file=f)  # index for atom sites is ahead by 1
+            f'{atom_sites[site_number-1].type} {atom_sites[every[1]].type} '
+            f'{atom_sites[every[2]].type} {atom_sites[every[3]].type}', file=f)  # index for atom sites is ahead by 1
             ii = ii + 1
             i += 1
         site_number = site_number + 1
