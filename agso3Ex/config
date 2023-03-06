@@ -190,5 +190,29 @@ propertorsions:
   ENERGY: 4.80
   ANGLE: 0.
   MULTIPLICITY: 1
+ 4:
+  i: S
+  j: C
+  k: C
+  l: F
+  ENERGY: 2.0
+  ANGLE: 0.
+  MULTIPLICITY: 1
+ 5:
+  i: C
+  j: C
+  k: O
+  l: C
+  ENERGY: 2.0
+  ANGLE: 0.
+  MULTIPLICITY: 1
+ 6:
+  i: F
+  j: C
+  k: C
+  l: F
+  ENERGY: 2.0
+  ANGLE: 0.
+  MULTIPLICITY: 1
   
 
