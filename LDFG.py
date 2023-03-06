@@ -669,6 +669,8 @@ class StructureSite:
                 angle_type_list = []
                 for each in known_angle_type:
                     angle_type_list.append((each[0], each[1], each[2]))
+                    # add permutation of arrangement
+                    # angle_type_list.append((each[0], each[1], each[2]))
                 # print(angle_type_list)
                 # print(atom1, atom2, atom3)
                 # print(atoms_list)
@@ -834,6 +836,11 @@ for each_site in nn_sites:
 
             (checked_if_angles, type_angle) = atom_sites[
                 siteval].check_if_angle(siteval, int(each_nn[2]), each_second_nn)
+            if not checked_if_angles:
+                # check mirror arrangement
+                (checked_if_angles, type_angle) = atom_sites[
+                    siteval].check_if_angle( each_second_nn, int(each_nn[2]), siteval)
+
             if checked_if_angles:
                 atom_sites[siteval].add_angle(siteval, int(
                     each_nn[2]), each_second_nn, type_angle)
@@ -847,6 +854,10 @@ for each_site in nn_sites:
                 (checked_if_dihedrals, type_dihedral) = atom_sites[siteval].check_if_dihedral(
                     siteval, int(each_nn[2]), each_second_nn, each_third_nn)
                 # print(checked_if_dihedrals, type_dihedral)
+                if not checked_if_dihedrals:
+                    # check mirror arrangement
+                    (checked_if_dihedrals, type_dihedral) = atom_sites[siteval].check_if_dihedral(
+                        each_third_nn, each_second_nn, int(each_nn[2]), siteval)
                 if checked_if_dihedrals:
                     atom_sites[siteval].add_dihedral(siteval, int(
                         each_nn[2]), each_second_nn, each_third_nn, type_dihedral)

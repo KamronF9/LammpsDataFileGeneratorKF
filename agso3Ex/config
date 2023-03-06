@@ -123,30 +123,30 @@ angles:
   k: O
   ENERGY: 350.
   THETA: 115.5
-#  1:
-#   i: O
-#   j: S
-#   k: C
-#   ENERGY: 350.
-#   THETA: 109.5
-#  2:
-#   i: S
-#   j: C
-#   k: F
-#   ENERGY: 100.
-#   THETA: 109.5
-#  3:
-#   i: C
-#   j: C
-#   k: F
-#   ENERGY: 100.3
-#   THETA: 118.3
-#  4:
-#   i: F
-#   j: C
-#   k: F
-#   ENERGY: 108.2
-#   THETA: 121.5
+ 1:
+  i: O
+  j: S
+  k: C
+  ENERGY: 350.
+  THETA: 109.5
+ 2:
+  i: S
+  j: C
+  k: F
+  ENERGY: 100.
+  THETA: 109.5
+ 3:
+  i: C
+  j: C
+  k: F
+  ENERGY: 100.3
+  THETA: 118.3
+ 4:
+  i: F
+  j: C
+  k: F
+  ENERGY: 108.2
+  THETA: 121.5
 #  5:
 #   i: H
 #   j: O
