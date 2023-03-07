@@ -512,14 +512,14 @@ def generate_DATA_FILE():
 
     # PROPER TORSIONS, ENERGY [kcal/mol], ANGLE [deg]
     # ***Note divide by two for putting in terms of lammps
-    # AND the 3 for the harmonic dihedrals for dreiding nafion
+    # AND the 3 for the n harmonic dihedrals for dreiding nafion
     save_BLANK_LINES(1, f)
     print("Dihedral Coeffs", file=f)
     save_BLANK_LINES(1, f)
     torsions, i = known_torsion_types(), 1
     for each in torsions:
         print(str(i) + " " + str(each[4]/2) + " " +
-              str(each[5]) + " " + str(each[6]) + " 3", file=f) 
+              str(each[6]) + " 3", file=f) 
         i += 1
 
     # Bonds
@@ -583,16 +583,19 @@ def generate_VDW_DATA_FILE():
     # ** note conversion from D0 to epsilon and R0 to sigma
     # R0=2^1/6*sigma
     # D0=4*epsilon
+    # don't need to mix now that lammps can just do it
     atom_types_general = known_atom_types_general()
     f = open(str("VDW_LAMMPS.data"), 'w')
     for i in range(len(atom_types_general)):
         lj_i = atom_types_general[i][2]
-        for j in range(len(atom_types_general)):
-            lj_j = atom_types_general[j][2]
-            mixed_epsilon = np.sqrt(float(lj_i[1]) * float(lj_j[1]))
-            mixed_sigma = (float(lj_i[0]) + float(lj_j[0])) / float(2)
-            f.write('pair_coeff ' + str(i + 1) + ' ' + str(j + 1) + \
-                    ' ' + str(mixed_epsilon/4) + ' ' + str(mixed_sigma/1.123) + '\n')  
+        f.write('pair_coeff ' + str(i + 1) + ' ' + str(i + 1) + \
+        ' ' + str(float(lj_i[1])/4) + ' ' + str(lj_i[0]/1.123) + '\n')
+        # for j in range(len(atom_types_general)):
+        #     lj_j = atom_types_general[j][2]
+        #     mixed_epsilon = np.sqrt(float(lj_i[1]) * float(lj_j[1]))
+        #     mixed_sigma = (float(lj_i[0]) + float(lj_j[0])) / float(2)
+        #     f.write('pair_coeff ' + str(i + 1) + ' ' + str(j + 1) + \
+        #             ' ' + str(mixed_epsilon/4) + ' ' + str(mixed_sigma/1.123) + '\n')  
     f.close()
 
 
@@ -657,7 +660,7 @@ class StructureSite:
                 # print(atoms_list)
                 count = 0
                 for each in angle_type_list:
-                    print(atoms_list, each)
+                    # print(atoms_list, each) #XX
                     if atoms_list == each:
                         return (True, count)
                     count += 1
@@ -803,7 +806,7 @@ for each_site in nn_sites:
             if each_second_nn == siteval:
                 break
             # Checks for Angles (and adds Angles)
-            print(siteval, int(each_nn[2]), each_second_nn) #XX
+            # print(siteval, int(each_nn[2]), each_second_nn) #XX
             # 36 65 36
             # 36 67 36
             # 36 66 36
@@ -830,6 +833,9 @@ for each_site in nn_sites:
             # print(atom_sites[int(each_second_nn)].bonds) many []
             for each_third_nn in atom_sites[int(each_second_nn)].bonds:
                 # Checks for Diherals (and adds Diherals)
+                # Confirm no repeated neighbors with added third nn
+                if each_third_nn in [siteval, int(each_nn[2]), each_second_nn]:
+                    break
                 # print(int(each_nn[2])) # 69...70...
                 # print(siteval, int(each_nn[2]), each_second_nn, each_third_nn)
                 (checked_if_dihedrals, type_dihedral) = atom_sites[siteval].check_if_dihedral(
