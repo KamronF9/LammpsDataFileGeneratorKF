@@ -27,6 +27,8 @@ import sys
 
 # os.chdir(r'agso3Ex')  # adjust later
 
+
+
 def known_atom_types():
     types = []
     for each in config['types']:
@@ -383,7 +385,7 @@ def generate_DATA_FILE():
     f = open(str(fil[0] + ".data"), 'w')
 
     # LAMMPS Description           (1st line of file)
-    print('LAMMPS DATA FILE FOR ' + fil[0], file=f)
+    print('LAMMPS DATA FILE FOR ' + fil[0] + 'metal units', file=f)
 
     save_BLANK_LINES(1, f)
 
@@ -498,7 +500,8 @@ def generate_DATA_FILE():
     save_BLANK_LINES(1, f)
     bonds, i = known_bond_types(), 1
     for each in bonds:
-        print(str(i) + " " + str(each[2]/2) + " " + str(each[3]), file=f)  # ***Note divide by two for putting in terms of lammps
+        # bond K r0
+        print(str(i) + " " + str(each[2]/2/kcalPermolToeV) + " " + str(each[3]), file=f)  # ***Note divide by two for putting in terms of lammps
         i += 1
 
     #ANGLES (BENDING), ENERGY [kcal/mol/rad^2], THETA [deg]
@@ -507,7 +510,8 @@ def generate_DATA_FILE():
     save_BLANK_LINES(1, f)
     angles, i = known_angle_types(), 1
     for each in angles:
-        print(str(i) + " " + str(each[3]/2) + " " + str(each[4]), file=f) # ***Note divide by two for putting in terms of lammps
+        # angle K theta0
+        print(str(i) + " " + str(each[3]/2/kcalPermolToeV) + " " + str(each[4]), file=f) # ***Note divide by two for putting in terms of lammps
         i += 1
 
     # PROPER TORSIONS, ENERGY [kcal/mol], ANGLE [deg]
@@ -518,7 +522,8 @@ def generate_DATA_FILE():
     save_BLANK_LINES(1, f)
     torsions, i = known_torsion_types(), 1
     for each in torsions:
-        print(str(i) + " " + str(each[4]/2) + " " +
+        # dihedral K d n
+        print(str(i) + " " + str(each[4]/2/kcalPermolToeV) + " " +
               str(each[6]) + " 3", file=f) 
         i += 1
 
@@ -589,7 +594,7 @@ def generate_VDW_DATA_FILE():
     for i in range(len(atom_types_general)):
         lj_i = atom_types_general[i][2]
         f.write('pair_coeff ' + str(i + 1) + ' ' + str(i + 1) + \
-        ' ' + str(float(lj_i[1])/4) + ' ' + str(lj_i[0]/1.123) + '\n')
+        ' ' + str(float(lj_i[1])/4/kcalPermolToeV) + ' ' + str(lj_i[0]/1.123) + '\n')
         # for j in range(len(atom_types_general)):
         #     lj_j = atom_types_general[j][2]
         #     mixed_epsilon = np.sqrt(float(lj_i[1]) * float(lj_j[1]))
@@ -706,6 +711,9 @@ global config
 with open("config", 'r') as ymlfile:
     # print(ymlfile)
     config = yaml.safe_load(ymlfile)
+
+global kcalPermolToeV
+kcalPermolToeV = 23.06 #div by to go from kcal/mol to eV.  1 eV to 23.06 kcal/mol
 
 #-------------- Load in Structure -------------
 global structure
