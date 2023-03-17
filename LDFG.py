@@ -9,6 +9,8 @@
 #numpy                     1.23.3                   pypi_0    pypi
 #pymatgen                  2023.1.30                pypi_0    pypi
 
+#TODO [] add read in of structure from poscar instead of config
+
 from __future__ import print_function
 import numpy as np
 from numpy import linalg as LA
@@ -385,7 +387,7 @@ def generate_DATA_FILE():
     f = open(str(fil[0] + ".data"), 'w')
 
     # LAMMPS Description           (1st line of file)
-    print('LAMMPS DATA FILE FOR ' + fil[0] + 'metal units', file=f)
+    print('LAMMPS DATA FILE FOR ' + fil[0] + ' in metal units', file=f)
 
     save_BLANK_LINES(1, f)
 
@@ -586,21 +588,23 @@ def generate_DATA_FILE():
 
 def generate_VDW_DATA_FILE():
     # ** note conversion from D0 to epsilon and R0 to sigma
+    # mixing by geometric mean
     # R0=2^1/6*sigma
     # D0=4*epsilon
-    # don't need to mix now that lammps can just do it
+    # don't need to mix now that lammps can just do it BUT not with hybrid
     atom_types_general = known_atom_types_general()
-    f = open(str("VDW_LAMMPS.data"), 'w')
+    f = open(str("VDW_LAMMPS"), 'w')
     for i in range(len(atom_types_general)):
         lj_i = atom_types_general[i][2]
-        f.write('pair_coeff ' + str(i + 1) + ' ' + str(i + 1) + \
-        ' ' + str(float(lj_i[1])/4/kcalPermolToeV) + ' ' + str(lj_i[0]/1.123) + '\n')
-        # for j in range(len(atom_types_general)):
-        #     lj_j = atom_types_general[j][2]
-        #     mixed_epsilon = np.sqrt(float(lj_i[1]) * float(lj_j[1]))
-        #     mixed_sigma = (float(lj_i[0]) + float(lj_j[0])) / float(2)
-        #     f.write('pair_coeff ' + str(i + 1) + ' ' + str(j + 1) + \
-        #             ' ' + str(mixed_epsilon/4) + ' ' + str(mixed_sigma/1.123) + '\n')  
+        # f.write('pair_coeff ' + str(i + 1) + ' ' + str(i + 1) + \
+        # ' ' + str(float(lj_i[1])/4/kcalPermolToeV) + ' ' + str(lj_i[0]/1.123) + '\n')
+        for j in range(i,len(atom_types_general)):
+            lj_j = atom_types_general[j][2]
+            mixed_epsilon = np.sqrt(float(lj_i[1]) * float(lj_j[1]))
+            mixed_sigma = np.sqrt(float(lj_i[0]) * float(lj_j[0]))
+            # mixed_sigma = (float(lj_i[0]) + float(lj_j[0])) / float(2)
+            f.write('pair_coeff ' + str(i + 1) + ' ' + str(j + 1) + \
+                    ' lj/cut ' + str(mixed_epsilon/4/kcalPermolToeV) + ' ' + str(mixed_sigma/1.123) + '\n')  
     f.close()
 
 
@@ -749,16 +753,21 @@ nn_sites = structure.get_all_neighbors(r=max_bond_length())
 # print('nn_sites',nn_sites)
 #------------- Bonded Atoms Assignment ----------------
 # Iterates through each position assignment for Bond Assignment.
+excludeFromBonds = config['excludeFromBonds']
+# print(config)
+
 siteval = 0
 for each_site in nn_sites:
     # print(each_site)
     # exit()
-    for each in each_site:
-        if site_bonded(siteval, each[2], each[1]):  # s1, s2, bond length
-            #print(each[2], each[1])
-            atom_sites[siteval].add_bond(each[2], None, each[1])
-            #add opposing bond?
-            atom_sites[each[2]].add_bond(siteval, None, each[1])
+    # if (siteval+1) not in excludeFromBonds:  # siteval+1 to align with lammps data file
+    if True:
+        for each in each_site:
+            if site_bonded(siteval, each[2], each[1]):  # s1, s2, bond length
+                #print(each[2], each[1])
+                atom_sites[siteval].add_bond(each[2], None, each[1])
+                #add opposing bond?
+                atom_sites[each[2]].add_bond(siteval, None, each[1])
     siteval += 1
 
 #------------- Atom Type Assignment ----------------
