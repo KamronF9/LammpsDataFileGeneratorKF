@@ -9,7 +9,7 @@
 #numpy                     1.23.3                   pypi_0    pypi
 #pymatgen                  2023.1.30                pypi_0    pypi
 
-#TODO [] add read in of structure from poscar instead of config
+#TODO  add read in of structure from poscar instead of config
 
 from __future__ import print_function
 import numpy as np
@@ -411,9 +411,16 @@ def generate_DATA_FILE():
     # print("ITEM: BOX BOUNDS xy xz yz pp pp pp", file=f)
     # save_BLANK_LINES(1, f)
 
-    X = config["lattice_parameters"]["vectors"]['i']
-    Y = config["lattice_parameters"]["vectors"]['j']
-    Z = config["lattice_parameters"]["vectors"]['k']
+    # X = config["lattice_parameters"]["vectors"]['i']
+    # Y = config["lattice_parameters"]["vectors"]['j']
+    # Z = config["lattice_parameters"]["vectors"]['k']
+    R = structure.lattice.matrix
+    # print(R[0])
+    X = R[0]
+    Y = R[1]
+    Z = R[2]
+
+
     # alpha = math.radians(config["lattice_parameters"]["angles"]['alpha'])
     # beta = math.radians(config["lattice_parameters"]["angles"]['beta'])
     # gamma = math.radians(config["lattice_parameters"]["angles"]['gamma'])
@@ -722,8 +729,8 @@ kcalPermolToeV = 23.06 #div by to go from kcal/mol to eV.  1 eV to 23.06 kcal/mo
 #-------------- Load in Structure -------------
 global structure
 structure_pos = Poscar.from_file(config['filename'])
-
 structure = structure_pos.structure
+# print(structure.lattice) XX
 sites = structure.sites
 position_order_assignment = type_assignment_execution_order()
 global atom_sites
@@ -760,8 +767,8 @@ siteval = 0
 for each_site in nn_sites:
     # print(each_site)
     # exit()
-    # if (siteval+1) not in excludeFromBonds:  # siteval+1 to align with lammps data file
-    if True:
+    if (siteval+1) not in excludeFromBonds:  # siteval+1 to align with lammps data file
+    # if True:
         for each in each_site:
             if site_bonded(siteval, each[2], each[1]):  # s1, s2, bond length
                 #print(each[2], each[1])
