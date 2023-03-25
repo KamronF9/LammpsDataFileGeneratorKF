@@ -597,7 +597,7 @@ def generate_VDW_DATA_FILE():
     # ** note conversion from D0 to epsilon and R0 to sigma
     # mixing by geometric mean
     # R0=2^1/6*sigma
-    # D0=4*epsilon
+    # D0=4*epsilon XX seems like it is D0 is epsilon
     # don't need to mix now that lammps can just do it BUT not with hybrid
     atom_types_general = known_atom_types_general()
     f = open(str("VDW_LAMMPS"), 'w')
@@ -611,7 +611,7 @@ def generate_VDW_DATA_FILE():
             mixed_sigma = np.sqrt(float(lj_i[0]) * float(lj_j[0]))
             # mixed_sigma = (float(lj_i[0]) + float(lj_j[0])) / float(2)
             f.write('pair_coeff ' + str(i + 1) + ' ' + str(j + 1) + \
-                    ' lj/cut ' + str(mixed_epsilon/4/kcalPermolToeV) + ' ' + str(mixed_sigma/1.123) + '\n')  
+                    ' lj/cut/coul/cut ' + str(mixed_epsilon/kcalPermolToeV) + ' ' + str(mixed_sigma/1.123) + '\n')  
     f.close()
 
 

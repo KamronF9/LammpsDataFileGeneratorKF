@@ -11,6 +11,8 @@
 filename: '2so3+1hso3-cn_h2o_500-out1.vasp'
 structure_type: 'vasp'
 
+excludeFromBonds: []
+
 #General Settings
 #angle/torsion and lattice angles not used
 
