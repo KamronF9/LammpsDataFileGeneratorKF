@@ -114,11 +114,11 @@ bonds:
   j: S
   ENERGY: 700.
   LENGTH: 1.8
- 5:
-  i: H
-  j: O
-  ENERGY: 500.
-  LENGTH: 1.0  
+#  5:
+#   i: H
+#   j: O
+#   ENERGY: 500.
+#   LENGTH: 1.0  
   
 
 #ANGLES (BENDING), ENERGY [kcal/mol/rad^2], THETA [deg]
@@ -171,12 +171,12 @@ angles:
   k: F
   ENERGY: 100.
   THETA: 109.5
- 8:
-  i: H
-  j: O
-  k: H
-  ENERGY: 120.
-  THETA: 109.5
+#  8:
+#   i: H
+#   j: O
+#   k: H
+#   ENERGY: 120.
+#   THETA: 109.5
  
 
 

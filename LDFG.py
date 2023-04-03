@@ -383,7 +383,7 @@ def generate_DATA_FILE():
     for an example of data file.
     """
 
-    fil = config['filename'].split(".", 1)
+    fil = filename.split(".", 1)
     f = open(str(fil[0] + ".data"), 'w')
 
     # LAMMPS Description           (1st line of file)
@@ -503,7 +503,7 @@ def generate_DATA_FILE():
     # print("Nonbond Coeffs",f)
     # Add this feature if you require it.
 
-    # Bond Coeffs, ENERGY [kcal/mol/A^2], LENGTH [A]
+    # Bond Coeffs, ENERGY [eV/A^2], LENGTH [A]
     save_BLANK_LINES(1, f)
     print("Bond Coeffs", file=f)
     save_BLANK_LINES(1, f)
@@ -513,7 +513,7 @@ def generate_DATA_FILE():
         print(str(i) + " " + str(each[2]/2/kcalPermolToeV) + " " + str(each[3]), file=f)  # ***Note divide by two for putting in terms of lammps
         i += 1
 
-    #ANGLES (BENDING), ENERGY [kcal/mol/rad^2], THETA [deg]
+    #ANGLES (BENDING), ENERGY [eV/rad^2], THETA [deg]
     save_BLANK_LINES(1, f)
     print("Angle Coeffs", file=f)
     save_BLANK_LINES(1, f)
@@ -523,7 +523,7 @@ def generate_DATA_FILE():
         print(str(i) + " " + str(each[3]/2/kcalPermolToeV) + " " + str(each[4]), file=f) # ***Note divide by two for putting in terms of lammps
         i += 1
 
-    # PROPER TORSIONS, ENERGY [kcal/mol], ANGLE [deg]
+    # PROPER TORSIONS, ENERGY [eV], ANGLE [deg]
     # ***Note divide by two for putting in terms of lammps
     # AND the 3 for the n harmonic dihedrals for dreiding nafion
     save_BLANK_LINES(1, f)
@@ -718,6 +718,12 @@ class StructureSite:
         return (False, None)
 
 #-------------- Import Config File -----------
+if len(sys.argv) < 2:
+	print('Usage: LDFG.py <vasp File name>')
+	exit(1)
+
+filename = sys.argv[1]  #read vasp filename
+
 global config
 with open("config", 'r') as ymlfile:
     # print(ymlfile)
@@ -728,7 +734,7 @@ kcalPermolToeV = 23.06 #div by to go from kcal/mol to eV.  1 eV to 23.06 kcal/mo
 
 #-------------- Load in Structure -------------
 global structure
-structure_pos = Poscar.from_file(config['filename'])
+structure_pos = Poscar.from_file(filename)
 structure = structure_pos.structure
 # print(structure.lattice) XX
 sites = structure.sites
