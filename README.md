@@ -15,7 +15,7 @@ The tolerances can be adjusted in the config file, since it is likely that unopt
 Make sure you have installed pymatgen. This can be done:
     `easy_install pymatgen`
 or 
-    `pip install pymatgen`
+    `pip install pymatgen==2023.3.23`
 Alternatively, go to their [website](http://pymatgen.org/) for installation instructions.
 
 ##3. Quick-start Guide

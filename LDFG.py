@@ -405,8 +405,9 @@ def generate_DATA_FILE():
 
     print(str(len(known_atom_types())) + " atom types", file=f)
     print(str(len(known_bond_types())) + " bond types", file=f)
-    print(str(len(known_angle_types())) + " angle types", file=f)
-    print(str(len(known_torsion_types())) + " dihedral types", file=f)
+    if not onlyFindBonds:
+        print(str(len(known_angle_types())) + " angle types", file=f)
+        print(str(len(known_torsion_types())) + " dihedral types", file=f)
     print("0 improper types", file=f)
 
     save_BLANK_LINES(1, f)
@@ -514,29 +515,30 @@ def generate_DATA_FILE():
         # bond K r0
         print(str(i) + " " + str(each[2]/2/kcalPermolToeV) + " " + str(each[3]), file=f)  # ***Note divide by two for putting in terms of lammps
         i += 1
+    if False:
+            
+        #ANGLES (BENDING), ENERGY [eV/rad^2], THETA [deg]
+        save_BLANK_LINES(1, f)
+        print("Angle Coeffs", file=f)
+        save_BLANK_LINES(1, f)
+        angles, i = known_angle_types(), 1
+        for each in angles:
+            # angle K theta0
+            print(str(i) + " " + str(each[3]/2/kcalPermolToeV) + " " + str(each[4]), file=f) # ***Note divide by two for putting in terms of lammps
+            i += 1
 
-    #ANGLES (BENDING), ENERGY [eV/rad^2], THETA [deg]
-    save_BLANK_LINES(1, f)
-    print("Angle Coeffs", file=f)
-    save_BLANK_LINES(1, f)
-    angles, i = known_angle_types(), 1
-    for each in angles:
-        # angle K theta0
-        print(str(i) + " " + str(each[3]/2/kcalPermolToeV) + " " + str(each[4]), file=f) # ***Note divide by two for putting in terms of lammps
-        i += 1
-
-    # PROPER TORSIONS, ENERGY [eV], ANGLE [deg]
-    # ***Note divide by two for putting in terms of lammps
-    # AND the 3 for the n harmonic dihedrals for dreiding nafion
-    save_BLANK_LINES(1, f)
-    print("Dihedral Coeffs", file=f)
-    save_BLANK_LINES(1, f)
-    torsions, i = known_torsion_types(), 1
-    for each in torsions:
-        # dihedral K d n
-        print(str(i) + " " + str(each[4]/2/kcalPermolToeV) + " " +
-              str(each[6]) + " 3", file=f) 
-        i += 1
+        # PROPER TORSIONS, ENERGY [eV], ANGLE [deg]
+        # ***Note divide by two for putting in terms of lammps
+        # AND the 3 for the n harmonic dihedrals for dreiding nafion
+        save_BLANK_LINES(1, f)
+        print("Dihedral Coeffs", file=f)
+        save_BLANK_LINES(1, f)
+        torsions, i = known_torsion_types(), 1
+        for each in torsions:
+            # dihedral K d n
+            print(str(i) + " " + str(each[4]/2/kcalPermolToeV) + " " +
+                str(each[6]) + " 3", file=f) 
+            i += 1
 
     # Bonds
     save_BLANK_LINES(1, f)
@@ -553,40 +555,40 @@ def generate_DATA_FILE():
                 bonds_added.append(sorted([site_number, every + 1]))
                 i += 1
         site_number = site_number + 1
+    if False:
+        # Angles
+        save_BLANK_LINES(1, f)
+        print("Angles", file=f)
+        save_BLANK_LINES(1, f)
+        i = 1
+        site_number = 1
+        for each in atom_sites:
+            ii = 0
+            for every in each.angles:
+                print(f'{str(i)} {str(each.angle_types[ii] + 1)} {str(site_number)} '
+                f'{str(every[1] + 1)} {str(every[2] + 1)} # '
+                f'{atom_sites[site_number-1].type} {atom_sites[every[1]].type} '
+                f'{atom_sites[every[2]].type}', file=f)  # index for atom sites is ahead by 1
+                ii = ii + 1
+                i += 1
+            site_number = site_number + 1
 
-    # Angles
-    save_BLANK_LINES(1, f)
-    print("Angles", file=f)
-    save_BLANK_LINES(1, f)
-    i = 1
-    site_number = 1
-    for each in atom_sites:
-        ii = 0
-        for every in each.angles:
-            print(f'{str(i)} {str(each.angle_types[ii] + 1)} {str(site_number)} '
-            f'{str(every[1] + 1)} {str(every[2] + 1)} # '
-            f'{atom_sites[site_number-1].type} {atom_sites[every[1]].type} '
-            f'{atom_sites[every[2]].type}', file=f)  # index for atom sites is ahead by 1
-            ii = ii + 1
-            i += 1
-        site_number = site_number + 1
-
-    # Dihedrals
-    save_BLANK_LINES(1, f)
-    print("Dihedrals", file=f)
-    save_BLANK_LINES(1, f)
-    i = 1
-    site_number = 1
-    for each in atom_sites:
-        ii = 0
-        for every in each.dihedrals:
-            print(f'{str(i)} {str(each.dihedral_types[ii] + 1)} {str(site_number)} '
-            f'{str(every[1] + 1)} {str(every[2] + 1)} {str(every[3] + 1)} # '
-            f'{atom_sites[site_number-1].type} {atom_sites[every[1]].type} '
-            f'{atom_sites[every[2]].type} {atom_sites[every[3]].type}', file=f)  # index for atom sites is ahead by 1
-            ii = ii + 1
-            i += 1
-        site_number = site_number + 1
+        # Dihedrals
+        save_BLANK_LINES(1, f)
+        print("Dihedrals", file=f)
+        save_BLANK_LINES(1, f)
+        i = 1
+        site_number = 1
+        for each in atom_sites:
+            ii = 0
+            for every in each.dihedrals:
+                print(f'{str(i)} {str(each.dihedral_types[ii] + 1)} {str(site_number)} '
+                f'{str(every[1] + 1)} {str(every[2] + 1)} {str(every[3] + 1)} # '
+                f'{atom_sites[site_number-1].type} {atom_sites[every[1]].type} '
+                f'{atom_sites[every[2]].type} {atom_sites[every[3]].type}', file=f)  # index for atom sites is ahead by 1
+                ii = ii + 1
+                i += 1
+            site_number = site_number + 1
 
     # Impropers
     # save_BLANK_LINES(1, f)
@@ -750,7 +752,7 @@ for i in range(len(sites)):
 
 
 
-#-------------- Intiallize Lists -------------
+#-------------- Intialize Lists -------------
 atom_types_general = known_atom_types_general()
 i, types, dependencies = 0, [
     None] * len(atom_types_general), [None] * len(atom_types_general)
@@ -766,9 +768,14 @@ nn_sites = structure.get_all_neighbors(r=max_bond_length())
 # nn_sites[65]  S 
 # nn_sites[36]  OOOC
 # print('nn_sites',nn_sites)
+
 #------------- Bonded Atoms Assignment ----------------
 # Iterates through each position assignment for Bond Assignment.
 excludeFromBonds = config['excludeFromBonds']
+try:
+    onlyFindBonds = config['onlyFindBonds']
+except:
+    onlyFindBonds = False
 # print(config)
 
 siteval = 0
@@ -821,66 +828,68 @@ if not errors == []:
     print("This can happen if the bond tolerances are raised too high.")
     print("Check your tolerances, located in the config file.")
 
-#------------- Dihedral Assignment -----------------
-# Iterates through each position assignement for Angle and Dihedrals
-siteval = 0
-for each_site in nn_sites:
-    # print(siteval, each_site) #XX 
-    for each_nn in each_site:
-        # print(siteval, each_nn) #XX
-        # issue .bonds only works one way 
-        # if siteval==65: 
-        #     sys.exit()
-        # each_nn[2] id of 36
-        # atom_sites[int(each_nn[2])].bonds  now we have opposing bonds
-        for each_second_nn in atom_sites[int(each_nn[2])].bonds:  #eachnn2 is site 2
-            # check if second nn bond is itself first
-            if each_second_nn == siteval:
-                break
-            # Checks for Angles (and adds Angles)
-            # print(siteval, int(each_nn[2]), each_second_nn) #XX
-            # 36 65 36
-            # 36 67 36
-            # 36 66 36
-            # 36 69 36
-            # 36 69 72
-            # atom_sites[36].type S
-            # atom_sites[36].bonded(66) false
-            # for i in range(36,100):
-            #     print(atom_sites[i].bonds)
-            # atom_sites[66].bonded(36) true
-
-            (checked_if_angles, type_angle) = atom_sites[
-                siteval].check_if_angle(siteval, int(each_nn[2]), each_second_nn)
-            if not checked_if_angles:
-                # check mirror arrangement
-                (checked_if_angles, type_angle) = atom_sites[
-                    siteval].check_if_angle( each_second_nn, int(each_nn[2]), siteval)
-
-            if checked_if_angles:
-                atom_sites[siteval].add_angle(siteval, int(
-                    each_nn[2]), each_second_nn, type_angle)
-
-            # Checks for Diherals (and adds Diherals)
-            # print(atom_sites[int(each_second_nn)].bonds) many []
-            for each_third_nn in atom_sites[int(each_second_nn)].bonds:
-                # Checks for Diherals (and adds Diherals)
-                # Confirm no repeated neighbors with added third nn
-                if each_third_nn in [siteval, int(each_nn[2]), each_second_nn]:
+if not onlyFindBonds:
+        
+    #------------- Dihedral Assignment -----------------
+    # Iterates through each position assignement for Angle and Dihedrals
+    siteval = 0
+    for each_site in nn_sites:
+        # print(siteval, each_site) #XX 
+        for each_nn in each_site:
+            # print(siteval, each_nn) #XX
+            # issue .bonds only works one way 
+            # if siteval==65: 
+            #     sys.exit()
+            # each_nn[2] id of 36
+            # atom_sites[int(each_nn[2])].bonds  now we have opposing bonds
+            for each_second_nn in atom_sites[int(each_nn[2])].bonds:  #eachnn2 is site 2
+                # check if second nn bond is itself first
+                if each_second_nn == siteval:
                     break
-                # print(int(each_nn[2])) # 69...70...
-                # print(siteval, int(each_nn[2]), each_second_nn, each_third_nn)
-                (checked_if_dihedrals, type_dihedral) = atom_sites[siteval].check_if_dihedral(
-                    siteval, int(each_nn[2]), each_second_nn, each_third_nn)
-                # print(checked_if_dihedrals, type_dihedral)
-                if not checked_if_dihedrals:
+                # Checks for Angles (and adds Angles)
+                # print(siteval, int(each_nn[2]), each_second_nn) #XX
+                # 36 65 36
+                # 36 67 36
+                # 36 66 36
+                # 36 69 36
+                # 36 69 72
+                # atom_sites[36].type S
+                # atom_sites[36].bonded(66) false
+                # for i in range(36,100):
+                #     print(atom_sites[i].bonds)
+                # atom_sites[66].bonded(36) true
+
+                (checked_if_angles, type_angle) = atom_sites[
+                    siteval].check_if_angle(siteval, int(each_nn[2]), each_second_nn)
+                if not checked_if_angles:
                     # check mirror arrangement
+                    (checked_if_angles, type_angle) = atom_sites[
+                        siteval].check_if_angle( each_second_nn, int(each_nn[2]), siteval)
+
+                if checked_if_angles:
+                    atom_sites[siteval].add_angle(siteval, int(
+                        each_nn[2]), each_second_nn, type_angle)
+
+                # Checks for Diherals (and adds Diherals)
+                # print(atom_sites[int(each_second_nn)].bonds) many []
+                for each_third_nn in atom_sites[int(each_second_nn)].bonds:
+                    # Checks for Diherals (and adds Diherals)
+                    # Confirm no repeated neighbors with added third nn
+                    if each_third_nn in [siteval, int(each_nn[2]), each_second_nn]:
+                        break
+                    # print(int(each_nn[2])) # 69...70...
+                    # print(siteval, int(each_nn[2]), each_second_nn, each_third_nn)
                     (checked_if_dihedrals, type_dihedral) = atom_sites[siteval].check_if_dihedral(
-                        each_third_nn, each_second_nn, int(each_nn[2]), siteval)
-                if checked_if_dihedrals:
-                    atom_sites[siteval].add_dihedral(siteval, int(
-                        each_nn[2]), each_second_nn, each_third_nn, type_dihedral)
-    siteval += 1
+                        siteval, int(each_nn[2]), each_second_nn, each_third_nn)
+                    # print(checked_if_dihedrals, type_dihedral)
+                    if not checked_if_dihedrals:
+                        # check mirror arrangement
+                        (checked_if_dihedrals, type_dihedral) = atom_sites[siteval].check_if_dihedral(
+                            each_third_nn, each_second_nn, int(each_nn[2]), siteval)
+                    if checked_if_dihedrals:
+                        atom_sites[siteval].add_dihedral(siteval, int(
+                            each_nn[2]), each_second_nn, each_third_nn, type_dihedral)
+        siteval += 1
 #-------------- Generate Output Files -----------
 generate_DATA_FILE()
 generate_VDW_DATA_FILE()
