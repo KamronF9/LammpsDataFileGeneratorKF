@@ -515,7 +515,7 @@ def generate_DATA_FILE():
         # bond K r0
         print(str(i) + " " + str(each[2]/2/kcalPermolToeV) + " " + str(each[3]), file=f)  # ***Note divide by two for putting in terms of lammps
         i += 1
-    if False:
+    if not onlyFindBonds:
             
         #ANGLES (BENDING), ENERGY [eV/rad^2], THETA [deg]
         save_BLANK_LINES(1, f)
@@ -555,7 +555,7 @@ def generate_DATA_FILE():
                 bonds_added.append(sorted([site_number, every + 1]))
                 i += 1
         site_number = site_number + 1
-    if False:
+    if not onlyFindBonds:
         # Angles
         save_BLANK_LINES(1, f)
         print("Angles", file=f)
@@ -777,6 +777,7 @@ try:
 except:
     onlyFindBonds = False
 # print(config)
+print('onlyFindBonds-',onlyFindBonds)
 
 siteval = 0
 for each_site in nn_sites:
