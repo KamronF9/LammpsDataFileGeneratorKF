@@ -800,7 +800,7 @@ print('s2',nn_sites[27496-1][0][2])
 print('bond dist',nn_sites[27496-1][0][1])
 print('[coord] element',nn_sites[27496-1][0][0])
 
-sys.exit(1)
+
 #------------- Bonded Atoms Assignment ----------------
 # Iterates through each position assignment for Bond Assignment.
 excludeFromBonds = config['excludeFromBonds']
@@ -811,20 +811,43 @@ except:
 # print(config)
 print('onlyFindBonds-',onlyFindBonds)
 
+len(np.argwhere(np.array([str(i) for i in structure.species]) == 'Pt'))
+len(np.argwhere(np.array([str(i) for i in structure.species]) == 'Pt' )
+zVals = np.array(structure.cart_coords)[:,2]
+len(np.argwhere((zVals<7.)&(6.<zVals)))
+np.array(structure.cart_coords)[:][2]
+sys.exit(1)
+
+PtTopLayerSites = []
+for siteval in range(len(sites)):
+    if structure.species[siteval] == 'Element Pt' and 6.<structure.cart_coords[siteval][2]<7.:
+        PtTopLayerSites.append(siteval)
+print(PtTopLayerSites)
+
+
 siteval = 0
 for each_site in nn_sites:
     # print(each_site)
     # sys.exit(1)
-    if (siteval+1) not in excludeFromBonds:  # siteval+1 to align with lammps data file
-    # if True:
+    # if (siteval+1) not in excludeFromBonds:  # siteval+1 to align with lammps data file
+    # pt and Z value of top layer
+    
+    if True:
         for each in each_site:
-            if site_bonded(siteval, each[2], each[1]):  # s1#, s2#, bond length
-                #print(each[2], each[1])
-                atom_sites[siteval].add_bond(each[2], None, each[1])
-                #add opposing bond?
-                atom_sites[each[2]].add_bond(siteval, None, each[1])
+
+            if site_bonded(siteval, each[2], each[1]) and structure.species[each[2]] == 'O':  # s1#, s2#, bond length
+                print('Pt O bond')
+                # Tally up O
+                # collect O sitevals
+                # Tally up H 
+
+                # #print(each[2], each[1])
+                # atom_sites[siteval].add_bond(each[2], None, each[1])
+                # #add opposing bond?
+                # atom_sites[each[2]].add_bond(siteval, None, each[1])
     siteval += 1
 
+sys.exit(1)
 #------------- Atom Type Assignment ----------------
 level, siteval = 0, 0
 for order_assign_number in position_order_assignment:
