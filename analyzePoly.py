@@ -19,8 +19,10 @@ from numpy import linalg as LA
 import math
 from pymatgen.io.xyz import XYZ
 from pymatgen.core import structure
+from pymatgen.io.lammps import outputs
 from pymatgen.core.sites import PeriodicSite
 from pymatgen.core import Site
+from pymatgen.core import SETTINGS, Element, Lattice, Structure
 # from pymatgen import Lattice, Structure, Molecule
 import yaml
 from pymatgen.io.vasp import Poscar, sets
@@ -722,25 +724,25 @@ class StructureSite:
         return (False, None)
 
 #-------------- Import Config File -----------
-if len(sys.argv) < 2:
-	print('Usage: LDFG.py <vasp File name>')
-	exit(1)
+# if len(sys.argv) < 2:
+# 	print('Usage: LDFG.py <vasp File name>')
+# 	exit(1)
 
-filename = sys.argv[1]  #read vasp filename
+# filename = sys.argv[1]  #read vasp filename
 
-# global config
-# with open("config", 'r') as ymlfile:
-#     # print(ymlfile)
-#     config = yaml.safe_load(ymlfile)
+global config
+with open("config", 'r') as ymlfile:
+    # print(ymlfile)
+    config = yaml.safe_load(ymlfile)
 
 global kcalPermolToeV
 kcalPermolToeV = 23.06 #div by to go from kcal/mol to eV.  1 eV to 23.06 kcal/mol
 
 #-------------- Load in Structure -------------
 
-from pymatgen.io.lammps import outputs
-from pymatgen.core import SETTINGS, Element, Lattice, Structure
-import numpy as np
+# from pymatgen.io.lammps import outputs
+# from pymatgen.core import SETTINGS, Element, Lattice, Structure
+# import numpy as np
 
 test=outputs.parse_lammps_dumps('test500fsInt.dump')
 for i in test:
@@ -749,7 +751,8 @@ for i in test:
 coords=np.stack((i.data.x.to_numpy(),i.data.y.to_numpy(),i.data.z.to_numpy())).T
 atomic_symbols = i.data.element
 lattice=i.box.to_lattice()
-struct = Structure(
+global structure
+structure = Structure(
     lattice,
     atomic_symbols,
     coords,
@@ -758,10 +761,10 @@ struct = Structure(
     coords_are_cartesian=True,
 )
 
-sys.exit(1)
-global structure
-structure_pos = Poscar.from_file(filename)
-structure = structure_pos.structure
+
+
+# structure_pos = Poscar.from_file(filename)
+# structure = structure_pos.structure
 # print(structure.lattice) XX
 sites = structure.sites
 position_order_assignment = type_assignment_execution_order()
@@ -782,6 +785,7 @@ i, types, dependencies = 0, [
 for each in atom_types_general:
     types[i] = each[0]
     dependencies[i] = each[4].values()
+    # print(each[4]) 0:none
     i += 1
 
 #--------- Find Nearest Neighbors -------------
@@ -789,8 +793,14 @@ for each in atom_types_general:
 nn_sites = structure.get_all_neighbors(r=max_bond_length())
 # nn_sites[65]  S 
 # nn_sites[36]  OOOC
-# print('nn_sites',nn_sites)
+print('s1 element',structure.species[27496-1])
+print('nn_sites',nn_sites[27496-1])
+# get all neigh returns [(site, dist) ...]
+print('s2',nn_sites[27496-1][0][2])
+print('bond dist',nn_sites[27496-1][0][1])
+print('[coord] element',nn_sites[27496-1][0][0])
 
+sys.exit(1)
 #------------- Bonded Atoms Assignment ----------------
 # Iterates through each position assignment for Bond Assignment.
 excludeFromBonds = config['excludeFromBonds']
@@ -804,11 +814,11 @@ print('onlyFindBonds-',onlyFindBonds)
 siteval = 0
 for each_site in nn_sites:
     # print(each_site)
-    # exit()
+    # sys.exit(1)
     if (siteval+1) not in excludeFromBonds:  # siteval+1 to align with lammps data file
     # if True:
         for each in each_site:
-            if site_bonded(siteval, each[2], each[1]):  # s1, s2, bond length
+            if site_bonded(siteval, each[2], each[1]):  # s1#, s2#, bond length
                 #print(each[2], each[1])
                 atom_sites[siteval].add_bond(each[2], None, each[1])
                 #add opposing bond?
@@ -914,8 +924,8 @@ if not onlyFindBonds:
                             each_nn[2]), each_second_nn, each_third_nn, type_dihedral)
         siteval += 1
 #-------------- Generate Output Files -----------
-generate_DATA_FILE()
-generate_VDW_DATA_FILE()
+# generate_DATA_FILE()
+# generate_VDW_DATA_FILE()
 
 #-------------- Generate Output Notes -----------
 print("Sucessfully generated data files.")
