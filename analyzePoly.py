@@ -28,6 +28,7 @@ import yaml
 from pymatgen.io.vasp import Poscar, sets
 from string import digits
 import sys
+import pandas as pd
 
 # Returns known atom types in a list
 
@@ -226,7 +227,7 @@ def site_bonded(site1, site2, bond_length):
     """
     site1type = atom_sites[site1].type
     site2type = atom_sites[site2].type
-    print(site1type,site2type)
+    # print(site1type,site2type)
     # upper_range = bond_length + bond_length * \
     #     float(config['bond_length_tolerance_factor'])
     # lower_range = bond_length - bond_length * \
@@ -745,233 +746,172 @@ kcalPermolToeV = 23.06 #div by to go from kcal/mol to eV.  1 eV to 23.06 kcal/mo
 # from pymatgen.core import SETTINGS, Element, Lattice, Structure
 # import numpy as np
 
-frames=outputs.parse_lammps_dumps('test500fsInt.dump')
+frames=outputs.parse_lammps_dumps('/global/homes/k/kamron/Scratch/NNmd/Poly/MC12_lammps6merWPtandO2inNVTrepl3x3/00_0-5psfullModelStart5ps48node/test100fsInt.dump')
 # loop over every frame
 
-for iframe, frame in enumerate(frames):
-    1
-    # break
-print('total frames ', iframe)
+df = pd.DataFrame(columns=('Pt_H','Pt_O','O_O','O_H'))
 
-coords=np.stack((frame.data.x.to_numpy(),frame.data.y.to_numpy(),frame.data.z.to_numpy())).T
-atomic_symbols = frame.data.element
-lattice=frame.box.to_lattice()
-global structure
-structure = Structure(
-    lattice,
-    atomic_symbols,
-    coords,
-    to_unit_cell=False,
-    validate_proximity=False,
-    coords_are_cartesian=True,
-)
-
-
-
-# structure_pos = Poscar.from_file(filename)
-# structure = structure_pos.structure
-# print(structure.lattice) XX
-sites = structure.sites
-position_order_assignment = type_assignment_execution_order()
-global atom_sites
-atom_sites = [None] * len(sites)
-for i in range(len(sites)):
-    # This generates the class from above for site_in_Structure
-    atom_sites[i] = StructureSite(str(sites[i].species_string))
-
-
-
-
-#-------------- Intialize Lists -------------
-atom_types_general = known_atom_types_general()
-i, types, dependencies = 0, [
-    None] * len(atom_types_general), [None] * len(atom_types_general)
-
-for each in atom_types_general:
-    types[i] = each[0]
-    dependencies[i] = each[4].values()
-    # print(each[4]) 0:none
-    i += 1
-
-#--------- Find Nearest Neighbors -------------
-# nn_sites = structure.get_all_neighbors(max_bond_length(), include_index=True)
-nn_sites = structure.get_all_neighbors(r=max_bond_length())
-# nn_sites[65]  S 
-# nn_sites[36]  OOOC
-print('s1 element',structure.species[27496-1])
-print('nn_sites',nn_sites[27496-1])
-# get all neigh returns [(site, dist) ...]
-print('s2',nn_sites[27496-1][0][2])
-print('bond dist',nn_sites[27496-1][0][1])
-print('[coord] element',nn_sites[27496-1][0][0])
-
-
-#------------- Bonded Atoms Assignment ----------------
-# Iterates through each position assignment for Bond Assignment.
-excludeFromBonds = config['excludeFromBonds']
-try:
-    onlyFindBonds = config['onlyFindBonds']
-except:
-    onlyFindBonds = False
-# print(config)
-print('onlyFindBonds-',onlyFindBonds)
-
-# len(np.argwhere(np.array([str(i) for i in structure.species]) == 'Pt'))
-# len(np.argwhere(np.array([str(i) for i in structure.species]) == 'Pt' )
-zVals = np.array(structure.cart_coords)[:,2]
-sitesNearSurfandSurf = np.argwhere((zVals<8.)&(6.<zVals))
-# print(sitesNearSurfandSurf[0][0])
-# sys.exit(1)
-
-# PtTopLayerSites = []
-# for siteval in range(len(sites)):
-#     if structure.species[siteval] == 'Element Pt' and 6.<structure.cart_coords[siteval][2]<7.:
-#         PtTopLayerSites.append(siteval)
-# print(PtTopLayerSites)
-
-HPtTotal = 0
-
-# siteval = 0
-for siteval in sitesNearSurfandSurf:
-    siteval = siteval[0]
-    # skip if not H
-    if str(structure.species[siteval])!='H': continue
-# for each_site in nn_sites:
-    each_site = nn_sites[siteval]
-    # print(each_site)
-    # break
-    # sys.exit(1)
-    # if (siteval+1) not in excludeFromBonds:  # siteval+1 to align with lammps data file
-    # pt and Z value of top layer
-    
-    for each in each_site:
-        # print(str(structure.species[each[2]]))
+if False:
+    for iframe, frame in enumerate(frames):
+        1
         # break
-        site2 = each[2]
-        atDistance = each[1]
-        if str(structure.species[site2]) == 'Pt':
-            # print('H Pt dist ', atDistance)
-            
-            if site_bonded(siteval, site2, atDistance):  # s1#, s2#,  length bw atoms
-                print('H Pt bond')
-                HPtTotal += 1
-                # Tally up O
-                # collect O sitevals
-                # Tally up H 
+    print('totalframes ',iframe)
 
-                # #print(each[2], each[1])
-                # atom_sites[siteval].add_bond(each[2], None, each[1])
-                # #add opposing bond?
-                # atom_sites[each[2]].add_bond(siteval, None, each[1])
 
-sys.exit(1)
-#------------- Atom Type Assignment ----------------
-level, siteval = 0, 0
-for order_assign_number in position_order_assignment:
-    if dependencies[order_assign_number] == 'None':
-        level = 0
-    if hasNumbers(dependencies[order_assign_number]):
-        level = 2
-    else:
-        level = 1
+for iframe, frame in enumerate(frames):
 
-    siteval = 0
+    # if iframe==2: break
+    print('current frames/total =', iframe, '/51')
+    # sys.exit(1)
 
-    for each_site in nn_sites:
-        type_assignment(siteval, level, order_assign_number)
-        # print(atom_sites[siteval].type, atom_sites[siteval].bonds)
-        siteval += 1
-        
-    # print(atom_sites[173].type, atom_sites[116].type,
-    #       atom_sites[116].type, atom_sites[119].type)
-#------------- Bond Type Assignment ----------------
-for i in range(0, len(nn_sites)):
-    bond_type_assignment(i)
-#------------- Remove Un-Typed Bonds ---------------
-errors = []
-for i in range(0, len(nn_sites)):
-    errors = bond_untype_removal(i, errors)
-if not errors == []:
-    for each in errors:
-        print(
-            "WARNING: I hope you know what you are doing, there may be undefined bonds within structure:",
-            each[0],
-            "with",
-            each[1])
-    print("This can happen if the bond tolerances are raised too high.")
-    print("Check your tolerances, located in the config file.")
+    coords=np.stack((frame.data.x.to_numpy(),frame.data.y.to_numpy(),frame.data.z.to_numpy())).T
+    atomic_symbols = frame.data.element
+    lattice=frame.box.to_lattice()
+    global structure
+    structure = Structure(
+        lattice,
+        atomic_symbols,
+        coords,
+        to_unit_cell=False,
+        validate_proximity=False,
+        coords_are_cartesian=True,
+    )
 
-if not onlyFindBonds:
-        
-    #------------- Dihedral Assignment -----------------
-    # Iterates through each position assignement for Angle and Dihedrals
-    siteval = 0
-    for each_site in nn_sites:
-        # print(siteval, each_site) #XX 
-        for each_nn in each_site:
-            # print(siteval, each_nn) #XX
-            # issue .bonds only works one way 
-            # if siteval==65: 
-            #     sys.exit()
-            # each_nn[2] id of 36
-            # atom_sites[int(each_nn[2])].bonds  now we have opposing bonds
-            for each_second_nn in atom_sites[int(each_nn[2])].bonds:  #eachnn2 is site 2
-                # check if second nn bond is itself first
-                if each_second_nn == siteval:
-                    break
-                # Checks for Angles (and adds Angles)
-                # print(siteval, int(each_nn[2]), each_second_nn) #XX
-                # 36 65 36
-                # 36 67 36
-                # 36 66 36
-                # 36 69 36
-                # 36 69 72
-                # atom_sites[36].type S
-                # atom_sites[36].bonded(66) false
-                # for i in range(36,100):
-                #     print(atom_sites[i].bonds)
-                # atom_sites[66].bonded(36) true
 
-                (checked_if_angles, type_angle) = atom_sites[
-                    siteval].check_if_angle(siteval, int(each_nn[2]), each_second_nn)
-                if not checked_if_angles:
-                    # check mirror arrangement
-                    (checked_if_angles, type_angle) = atom_sites[
-                        siteval].check_if_angle( each_second_nn, int(each_nn[2]), siteval)
 
-                if checked_if_angles:
-                    atom_sites[siteval].add_angle(siteval, int(
-                        each_nn[2]), each_second_nn, type_angle)
+    # structure_pos = Poscar.from_file(filename)
+    # structure = structure_pos.structure
+    # print(structure.lattice) XX
+    sites = structure.sites
+    position_order_assignment = type_assignment_execution_order()
+    global atom_sites
+    atom_sites = [None] * len(sites)
+    for i in range(len(sites)):
+        # This generates the class from above for site_in_Structure
+        atom_sites[i] = StructureSite(str(sites[i].species_string))
 
-                # Checks for Diherals (and adds Diherals)
-                # print(atom_sites[int(each_second_nn)].bonds) many []
-                for each_third_nn in atom_sites[int(each_second_nn)].bonds:
-                    # Checks for Diherals (and adds Diherals)
-                    # Confirm no repeated neighbors with added third nn
-                    if each_third_nn in [siteval, int(each_nn[2]), each_second_nn]:
-                        break
-                    # print(int(each_nn[2])) # 69...70...
-                    # print(siteval, int(each_nn[2]), each_second_nn, each_third_nn)
-                    (checked_if_dihedrals, type_dihedral) = atom_sites[siteval].check_if_dihedral(
-                        siteval, int(each_nn[2]), each_second_nn, each_third_nn)
-                    # print(checked_if_dihedrals, type_dihedral)
-                    if not checked_if_dihedrals:
-                        # check mirror arrangement
-                        (checked_if_dihedrals, type_dihedral) = atom_sites[siteval].check_if_dihedral(
-                            each_third_nn, each_second_nn, int(each_nn[2]), siteval)
-                    if checked_if_dihedrals:
-                        atom_sites[siteval].add_dihedral(siteval, int(
-                            each_nn[2]), each_second_nn, each_third_nn, type_dihedral)
-        siteval += 1
-#-------------- Generate Output Files -----------
-# generate_DATA_FILE()
-# generate_VDW_DATA_FILE()
 
-#-------------- Generate Output Notes -----------
-print("Sucessfully generated data files.")
-print(str(len(atom_sites)) + " atoms")
-print(str(count_BONDS()) + " bonds")
-print(str(count_ANGLES()) + " angles")
-num_dihedrals = count_dihedrals()
-if num_dihedrals > 0:
-    print(str(num_dihedrals) + " dihedrals")
+
+
+    #-------------- Intialize Lists -------------
+    atom_types_general = known_atom_types_general()
+    i, types, dependencies = 0, [
+        None] * len(atom_types_general), [None] * len(atom_types_general)
+
+    for each in atom_types_general:
+        types[i] = each[0]
+        dependencies[i] = each[4].values()
+        # print(each[4]) 0:none
+        i += 1
+
+    #--------- Find Nearest Neighbors -------------
+    # nn_sites = structure.get_all_neighbors(max_bond_length(), include_index=True)
+    nn_sites = structure.get_all_neighbors(r=max_bond_length())
+    # nn_sites[65]  S 
+    # nn_sites[36]  OOOC
+
+    # print('s1 element',structure.species[27496-1])
+    # print('nn_sites',nn_sites[27496-1])
+    # # get all neigh returns [(site, dist) ...]
+    # print('s2',nn_sites[27496-1][0][2])
+    # print('bond dist',nn_sites[27496-1][0][1])
+    # print('[coord] element',nn_sites[27496-1][0][0])
+    # outputs
+    # s1 element F
+    # nn_sites [PeriodicSite: C (41.2143, 47.1704, 30.9792) [0.6546, 0.6827, 0.2667], PeriodicSite: C (42.4738, 46.4372, 30.3612) [0.6746, 0.6721, 0.2613], PeriodicSite: F (42.0048, 45.2571, 29.8931) [0.6672, 0.6550, 0.2573], PeriodicSite: F (43.3704, 46.1663, 31.3109) [0.6889, 0.6682, 0.2695]]
+    # s2 27491
+    # bond dist 2.4623963247211025
+    # [coord] element [41.2143 47.1704 30.9792] C
+
+
+    #------------- Bonded Atoms Assignment ----------------
+    # Iterates through each position assignment for Bond Assignment.
+    excludeFromBonds = config['excludeFromBonds']
+    try:
+        onlyFindBonds = config['onlyFindBonds']
+    except:
+        onlyFindBonds = False
+    # print(config)
+    print('onlyFindBonds-',onlyFindBonds)
+
+    # len(np.argwhere(np.array([str(i) for i in structure.species]) == 'Pt'))
+    # len(np.argwhere(np.array([str(i) for i in structure.species]) == 'Pt' )
+    zVals = np.array(structure.cart_coords)[:,2]
+    sitesNearSurfandSurf = np.argwhere((zVals<8.)&(6.<zVals))
+    # print(sitesNearSurfandSurf[0][0])
+    # sys.exit(1)
+
+    # PtTopLayerSites = []
+    # for siteval in range(len(sites)):
+    #     if structure.species[siteval] == 'Element Pt' and 6.<structure.cart_coords[siteval][2]<7.:
+    #         PtTopLayerSites.append(siteval)
+    # print(PtTopLayerSites)
+
+    H_PtTotal = 0
+    O_PtTotal = 0
+    O_OTotal = 0
+    O_HTotal = 0
+    OsiteOnSurf = []
+
+    # siteval = 0
+    for siteval in sitesNearSurfandSurf:
+        siteval = siteval[0]
+
+        if str(structure.species[siteval])=='H':
+            each_site = nn_sites[siteval]      
+            for each in each_site:
+                site2 = each[2]
+                atDistance = each[1]
+                if str(structure.species[site2]) == 'Pt':
+                    # print('H Pt dist ', atDistance)
+                    if site_bonded(siteval, site2, atDistance):  # s1#, s2#,  length bw atoms
+                        # print('H Pt bond')
+                        H_PtTotal += 1
+
+        if str(structure.species[siteval])=='O':
+            each_site = nn_sites[siteval]      
+            for each in each_site:
+                site2 = each[2]
+                atDistance = each[1]
+                if str(structure.species[site2]) == 'Pt':
+                    # print('H Pt dist ', atDistance)
+                    if site_bonded(siteval, site2, atDistance):  # s1#, s2#,  length bw atoms
+                        # print('O Pt bond')
+                        O_PtTotal += 1
+                        OsiteOnSurf.append(siteval)
+
+    # go through O on Pt surface 
+    for siteval in OsiteOnSurf:  
+        # double check still O
+        if str(structure.species[siteval])=='O':
+            each_site = nn_sites[siteval]      
+            for each in each_site:
+                site2 = each[2]
+                atDistance = each[1]
+
+                if str(structure.species[site2]) == 'O':
+                    # print('H Pt dist ', atDistance)
+                    if site_bonded(siteval, site2, atDistance):  # s1#, s2#,  length bw atoms
+                        # print('O Pt bond')
+                        O_OTotal += 1
+                
+                if str(structure.species[site2]) == 'H':
+                    # print('H Pt dist ', atDistance)
+                    if site_bonded(siteval, site2, atDistance):  # s1#, s2#,  length bw atoms
+                        # print('O Pt bond')
+                        O_HTotal += 1
+
+                        
+                        
+
+
+    df.loc[len(df.index)] = [H_PtTotal,O_PtTotal,O_OTotal,O_HTotal] # append to df
+
+    print(df)
+    df.to_csv('data.csv',index=False)
+    # print(f"H_PtTotal {H_PtTotal}")
+    # print(f"O_PtTotal {O_PtTotal}")
+    # print(f"O_OTotal {O_OTotal}")
+    # print(f"O_HTotal {O_HTotal}")
+
+
