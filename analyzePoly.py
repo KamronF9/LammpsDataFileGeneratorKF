@@ -226,6 +226,7 @@ def site_bonded(site1, site2, bond_length):
     """
     site1type = atom_sites[site1].type
     site2type = atom_sites[site2].type
+    print(site1type,site2type)
     # upper_range = bond_length + bond_length * \
     #     float(config['bond_length_tolerance_factor'])
     # lower_range = bond_length - bond_length * \
@@ -744,13 +745,17 @@ kcalPermolToeV = 23.06 #div by to go from kcal/mol to eV.  1 eV to 23.06 kcal/mo
 # from pymatgen.core import SETTINGS, Element, Lattice, Structure
 # import numpy as np
 
-test=outputs.parse_lammps_dumps('test500fsInt.dump')
-for i in test:
-    break
+frames=outputs.parse_lammps_dumps('test500fsInt.dump')
+# loop over every frame
 
-coords=np.stack((i.data.x.to_numpy(),i.data.y.to_numpy(),i.data.z.to_numpy())).T
-atomic_symbols = i.data.element
-lattice=i.box.to_lattice()
+for iframe, frame in enumerate(frames):
+    1
+    # break
+print('total frames ', iframe)
+
+coords=np.stack((frame.data.x.to_numpy(),frame.data.y.to_numpy(),frame.data.z.to_numpy())).T
+atomic_symbols = frame.data.element
+lattice=frame.box.to_lattice()
 global structure
 structure = Structure(
     lattice,
@@ -811,32 +816,45 @@ except:
 # print(config)
 print('onlyFindBonds-',onlyFindBonds)
 
-len(np.argwhere(np.array([str(i) for i in structure.species]) == 'Pt'))
-len(np.argwhere(np.array([str(i) for i in structure.species]) == 'Pt' )
+# len(np.argwhere(np.array([str(i) for i in structure.species]) == 'Pt'))
+# len(np.argwhere(np.array([str(i) for i in structure.species]) == 'Pt' )
 zVals = np.array(structure.cart_coords)[:,2]
-len(np.argwhere((zVals<7.)&(6.<zVals)))
-np.array(structure.cart_coords)[:][2]
-sys.exit(1)
+sitesNearSurfandSurf = np.argwhere((zVals<8.)&(6.<zVals))
+# print(sitesNearSurfandSurf[0][0])
+# sys.exit(1)
 
-PtTopLayerSites = []
-for siteval in range(len(sites)):
-    if structure.species[siteval] == 'Element Pt' and 6.<structure.cart_coords[siteval][2]<7.:
-        PtTopLayerSites.append(siteval)
-print(PtTopLayerSites)
+# PtTopLayerSites = []
+# for siteval in range(len(sites)):
+#     if structure.species[siteval] == 'Element Pt' and 6.<structure.cart_coords[siteval][2]<7.:
+#         PtTopLayerSites.append(siteval)
+# print(PtTopLayerSites)
 
+HPtTotal = 0
 
-siteval = 0
-for each_site in nn_sites:
+# siteval = 0
+for siteval in sitesNearSurfandSurf:
+    siteval = siteval[0]
+    # skip if not H
+    if str(structure.species[siteval])!='H': continue
+# for each_site in nn_sites:
+    each_site = nn_sites[siteval]
     # print(each_site)
+    # break
     # sys.exit(1)
     # if (siteval+1) not in excludeFromBonds:  # siteval+1 to align with lammps data file
     # pt and Z value of top layer
     
-    if True:
-        for each in each_site:
-
-            if site_bonded(siteval, each[2], each[1]) and structure.species[each[2]] == 'O':  # s1#, s2#, bond length
-                print('Pt O bond')
+    for each in each_site:
+        # print(str(structure.species[each[2]]))
+        # break
+        site2 = each[2]
+        atDistance = each[1]
+        if str(structure.species[site2]) == 'Pt':
+            # print('H Pt dist ', atDistance)
+            
+            if site_bonded(siteval, site2, atDistance):  # s1#, s2#,  length bw atoms
+                print('H Pt bond')
+                HPtTotal += 1
                 # Tally up O
                 # collect O sitevals
                 # Tally up H 
@@ -845,7 +863,6 @@ for each_site in nn_sites:
                 # atom_sites[siteval].add_bond(each[2], None, each[1])
                 # #add opposing bond?
                 # atom_sites[each[2]].add_bond(siteval, None, each[1])
-    siteval += 1
 
 sys.exit(1)
 #------------- Atom Type Assignment ----------------
