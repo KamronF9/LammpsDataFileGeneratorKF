@@ -30,6 +30,8 @@ from string import digits
 import sys
 import pandas as pd
 
+from pymatgen.analysis.diffusion import analyzer
+
 # Returns known atom types in a list
 
 # os.chdir(r'agso3Ex')  # adjust later
@@ -732,25 +734,30 @@ if len(sys.argv) < 2:
 
 filename = sys.argv[1]  #read vasp filename
 
-global config
-with open("config", 'r') as ymlfile:
-    # print(ymlfile)
-    config = yaml.safe_load(ymlfile)
+# global config
+# with open("config", 'r') as ymlfile:
+#     # print(ymlfile)
+#     config = yaml.safe_load(ymlfile)
 
 global kcalPermolToeV
 kcalPermolToeV = 23.06 #div by to go from kcal/mol to eV.  1 eV to 23.06 kcal/mol
 
 #-------------- Load in Structure -------------
 
-# from pymatgen.io.lammps import outputs
-# from pymatgen.core import SETTINGS, Element, Lattice, Structure
-# import numpy as np
+#TESTING -----
+from pymatgen.io.lammps import outputs
+from pymatgen.core import SETTINGS, Element, Lattice, Structure
+import numpy as np
+# from pymatgen.analysis.diffusion import analyzer
+from pymatgen.analysis.diffusion.analyzer import DiffusionAnalyzer
+# frames=outputs.parse_lammps_dumps('/global/homes/k/kamron/Scratch/NNmd/Poly/MC11b_lammps6merWPtandO2inNVTwsmallModel/temp3largeandfloat32/pt2/test100fsInt.dump')
+frames=outputs.parse_lammps_dumps('test100fsInt.dump')
+#TESTING ^^^^
 
-# frames=outputs.parse_lammps_dumps('/global/homes/k/kamron/Scratch/NNmd/Poly/MC12_lammps6merWPtandO2inNVTrepl3x3/00_0-5psfullModelStart5ps48node/test100fsInt.dump')
-frames=outputs.parse_lammps_dumps(filename)
+# frames=outputs.parse_lammps_dumps(filename)
 # loop over every frame
 
-df = pd.DataFrame(columns=('Pt_H','Pt_O','O_O','O_H'))
+# df = pd.DataFrame(columns=('Pt_H','Pt_O','O_O','O_H'))
 
 if False:
     for iframe, frame in enumerate(frames):
@@ -758,13 +765,11 @@ if False:
         # break
     print('totalframes ',iframe)
 
-
+structures = []
 for iframe, frame in enumerate(frames):
-
-    # if iframe==2: break
-    print('current frames/total =', iframe, '/51')
+    # if iframe==50: break
+    print('current frames/total =', iframe, '/')
     # sys.exit(1)
-
     coords=np.stack((frame.data.x.to_numpy(),frame.data.y.to_numpy(),frame.data.z.to_numpy())).T
     atomic_symbols = frame.data.element
     lattice=frame.box.to_lattice()
@@ -777,9 +782,28 @@ for iframe, frame in enumerate(frames):
         validate_proximity=False,
         coords_are_cartesian=True,
     )
+    structures.append(structure)
 
 
+ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 1,100,None,structures[0])
+ob.msd_components()
+ob.get_summary_dict()
+plt=ob.get_msd_plot()
+plt.savefig('test.png')
 
+# ob.REDIRECT                         ob.conductivity_components_std_dev  ob.dt                               ob.get_msd_plot(                    ob.msd                              ob.time_step
+# ob.as_dict()                        ob.conductivity_std_dev             ob.export_msdt(                     ob.get_summary_dict(                ob.msd_components                   ob.to_json()
+# ob.avg_nsteps                       ob.corrected_displacements          ob.framework_indices                ob.haven_ratio                      ob.plot_msd(                        ob.unsafe_hash()
+# ob.chg_conductivity                 ob.diffusivity                      ob.from_dict(                       ob.indices                          ob.smoothed                         ob.validate_monty(
+# ob.chg_conductivity_std_dev         ob.diffusivity_components           ob.from_files(                      ob.lattices                         ob.specie                           
+# ob.chg_diffusivity                  ob.diffusivity_components_std_dev   ob.from_structures(                 ob.max_framework_displacement       ob.sq_disp_ions                     
+# ob.chg_diffusivity_std_dev          ob.diffusivity_std_dev              ob.from_vaspruns(                   ob.max_ion_displacements            ob.step_skip                        
+# ob.conductivity                     ob.disp                             ob.get_drift_corrected_structures(  ob.min_obs                          ob.structure                        
+# ob.conductivity_components          ob.drift                            ob.get_framework_rms_plot(          ob.mscd                             ob.temperature       
+sys.exit(1)
+
+
+'''
     # structure_pos = Poscar.from_file(filename)
     # structure = structure_pos.structure
     # print(structure.lattice) XX
@@ -915,4 +939,4 @@ for iframe, frame in enumerate(frames):
     # print(f"O_OTotal {O_OTotal}")
     # print(f"O_HTotal {O_HTotal}")
 
-
+'''
