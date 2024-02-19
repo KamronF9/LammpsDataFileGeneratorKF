@@ -767,7 +767,7 @@ if False:
 
 structures = []
 for iframe, frame in enumerate(frames):
-    # if iframe==50: break
+    if iframe==40: break
     print('current frames/total =', iframe, '/')
     # sys.exit(1)
     coords=np.stack((frame.data.x.to_numpy(),frame.data.y.to_numpy(),frame.data.z.to_numpy())).T
@@ -785,11 +785,51 @@ for iframe, frame in enumerate(frames):
     structures.append(structure)
 
 
-ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 1,100,None,structures[0])
-ob.msd_components()
-ob.get_summary_dict()
-plt=ob.get_msd_plot()
-plt.savefig('test.png')
+
+# ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 1,100,initial_disp=None,initial_structure=structures[0],c_ranges=[(0.,.25)])
+
+
+
+cmax=116.
+# cs = [(0.,30.),(30.,80.),(80.,116.)]
+# cs = np.array([[0.,30.],[30.,80.],[80.,116.]])/cmax
+cs = np.array([[30.,90.]])/cmax
+# cs = np.array([[8.,30.],[30.,90.],[90.,112.]])/cmax
+cs = cs.tolist()
+
+for i,c in enumerate(cs):
+    print(c)
+    # from_structures(structures,specie,temperature,time_step,step_skip,initial_disp=None,initial_structure=None,**kwargs)
+    # ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 1,100,initial_disp=None,initial_structure=structures[0],c_ranges=[(0.25,0.75)])
+    # ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 1,100,initial_disp=None,initial_structure=structures[0],c_ranges=[(25.,75.)])
+    # ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 1,100,initial_disp=None,initial_structure=structures[0],c_ranges=[(0.,25.),(25.,75.)])
+    # ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 1,100,initial_disp=None,initial_structure=structures[0],c_ranges=[(0.,.25)])
+    ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 1,100,initial_disp=None,c_ranges=[c]) # ,smoothed=False
+    print(ob.diffusivity_c_range_components)
+    print(ob.diffusivity_c_range_components_std_dev)
+    print(ob.diffusivity_c_range)
+    # print(ob.diffusivity_c_range_components)
+
+    # ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 1,100,None,structures[0])
+    # ob.msd_components
+
+    # print(ob.get_summary_dict())
+    # plt=ob.get_msd_plot()
+    # plt.savefig(f'{i}test.png')
+
+# results
+# [0.06896551724137931, 0.25862068965517243]
+# [0.00000000e+00 0.00000000e+00 1.44035715e-06]
+# [0.00000000e+00 0.00000000e+00 2.00831611e-09]
+# 0.00021766855659840408
+# [0.25862068965517243, 0.7758620689655172]
+# [0.00000000e+00 0.00000000e+00 1.85207845e-06]
+# [0.00000000e+00 0.00000000e+00 2.47591558e-09]
+# 0.00027753267740046383
+# [0.7758620689655172, 0.9655172413793104]
+# [0.00000000e+00 0.00000000e+00 1.16148073e-06]
+# [0.00000000e+00 0.00000000e+00 1.99130287e-09]
+# 0.0003285887615171238
 
 # ob.REDIRECT                         ob.conductivity_components_std_dev  ob.dt                               ob.get_msd_plot(                    ob.msd                              ob.time_step
 # ob.as_dict()                        ob.conductivity_std_dev             ob.export_msdt(                     ob.get_summary_dict(                ob.msd_components                   ob.to_json()

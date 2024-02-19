@@ -18,8 +18,8 @@ for ifile, file in enumerate(sorted(glob.glob('*.rdf.dat*'))):
     plt.plot(data['r'], smoothg)
 
 # plt.plot(rMid, rdf)
-# plt.xlim(0, rMax)
-# plt.ylim(0, None)
+plt.xlim(0, 10)
+plt.ylim(0, 20)
 plt.xlabel('r [A]')
 plt.ylabel('g(r)')
 plt.legend()
