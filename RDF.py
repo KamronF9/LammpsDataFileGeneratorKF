@@ -163,7 +163,8 @@ for iLine,line in enumerate(open(inFile)):
 
         x = np.dot(atpos, np.linalg.inv(R.T))   # normalize positions to lattice shape
         xS = x[np.where(atNames=='S')[0]]
-        # xMg = x[np.where(atNames==2)[0]]
+        xF = x[np.where(atNames=='F')[0]]
+        xO = x[np.where(atNames=='O')[0]]
         # xNa = x[np.where(atNames==3)[0]]
         def getRDF(x1, x2):
             dx = x1[None,:,:] - x2[:,None,:]  # None adds a dimension 
@@ -173,14 +174,15 @@ for iLine,line in enumerate(open(inFile)):
             # norm -1 takes -> min(sum(abs(x), axis=0))
             return np.histogram(r, rBins)[0] * (np.linalg.det(R) / (binVol * len(x1) * len(x2)))
         rdf[:,0] += getRDF(xS, xS)
-        # rdf[:,1] += getRDF(xNa, xCl)
+        rdf[:,1] += getRDF(xF, xF)
+        rdf[:,2] += getRDF(xO, xO)
         # rdf[:,2] += getRDF(xMg, xCl)
         # rdf[:,3] += getRDF(xCl, xCl)
 
         if saveRDF and saveIntermedRDFs:
             rdfFile = outFile+".rdf.dat"+str(saveNum)
             rdf *= (1./resetRDFnSteps)
-            np.savetxt(rdfFile, np.hstack((rMid[:,None], rdf)), header='r gSS', comments='')
+            np.savetxt(rdfFile, np.hstack((rMid[:,None], rdf)), header='r gSS gFF gOO', comments='')
             rdfInited = False # reset rdf
             saveRDF = False # reset save flag
 
@@ -190,7 +192,7 @@ for iLine,line in enumerate(open(inFile)):
 if not saveIntermedRDFs:
     rdfFile = outFile+".rdf.datAll"
     rdf *= (1./nSteps)
-    np.savetxt(rdfFile, np.hstack((rMid[:,None], rdf)), header='r gSS', comments='')
+    np.savetxt(rdfFile, np.hstack((rMid[:,None], rdf)), header='r gSS gFF gOO', comments='')
     # rdfInited = False # reset rdf
     # saveRDF = False # reset save flag        
 
