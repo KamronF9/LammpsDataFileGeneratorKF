@@ -751,7 +751,9 @@ import numpy as np
 # from pymatgen.analysis.diffusion import analyzer
 from pymatgen.analysis.diffusion.analyzer import DiffusionAnalyzer
 # frames=outputs.parse_lammps_dumps('/global/homes/k/kamron/Scratch/NNmd/Poly/MC11b_lammps6merWPtandO2inNVTwsmallModel/temp3largeandfloat32/pt2/test100fsInt.dump')
-frames=outputs.parse_lammps_dumps('test100fsInt.dump')
+# frames=outputs.parse_lammps_dumps('test100fsInt.dump')
+frames=outputs.parse_lammps_dumps('pt2mc11bsorted100fs.dump')
+# frames=outputs.parse_lammps_dumps('../test5fsInt.dump')
 #TESTING ^^^^
 
 # frames=outputs.parse_lammps_dumps(filename)
@@ -767,11 +769,14 @@ if False:
 
 structures = []
 for iframe, frame in enumerate(frames):
-    if iframe==40: break
+    # if iframe==60: break
     print('current frames/total =', iframe, '/')
     # sys.exit(1)
     coords=np.stack((frame.data.x.to_numpy(),frame.data.y.to_numpy(),frame.data.z.to_numpy())).T
-    atomic_symbols = frame.data.element
+    # print(coords[6579])
+    # atomic_symbols = frame.data.element
+    type_dict={1:'C',2:'F',3:'H',4:'O',5:'Pt',6:'S'}
+    atomic_symbols = [type_dict[i] for i in frame.data.type]
     lattice=frame.box.to_lattice()
     global structure
     structure = Structure(
@@ -784,6 +789,9 @@ for iframe, frame in enumerate(frames):
     )
     structures.append(structure)
 
+# print(coords) # matches dump
+# print(lattice) #
+
 
 
 # ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 1,100,initial_disp=None,initial_structure=structures[0],c_ranges=[(0.,.25)])
@@ -791,10 +799,9 @@ for iframe, frame in enumerate(frames):
 
 
 cmax=116.
-# cs = [(0.,30.),(30.,80.),(80.,116.)]
-# cs = np.array([[0.,30.],[30.,80.],[80.,116.]])/cmax
-cs = np.array([[30.,90.]])/cmax
-# cs = np.array([[8.,30.],[30.,90.],[90.,112.]])/cmax
+
+# cs = np.array([[30.,90.]])/cmax
+cs = np.array([[8.,30.],[30.,90.],[90.,112.]])/cmax
 cs = cs.tolist()
 
 for i,c in enumerate(cs):
@@ -804,7 +811,8 @@ for i,c in enumerate(cs):
     # ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 1,100,initial_disp=None,initial_structure=structures[0],c_ranges=[(25.,75.)])
     # ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 1,100,initial_disp=None,initial_structure=structures[0],c_ranges=[(0.,25.),(25.,75.)])
     # ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 1,100,initial_disp=None,initial_structure=structures[0],c_ranges=[(0.,.25)])
-    ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 1,100,initial_disp=None,c_ranges=[c]) # ,smoothed=False
+    ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 100,1,initial_disp=None,initial_structure=structures[0],c_ranges=[c]) # ,smoothed=False
+    # ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 5,10,initial_disp=None,initial_structure=structures[0],c_ranges=[c]) 
     print(ob.diffusivity_c_range_components)
     print(ob.diffusivity_c_range_components_std_dev)
     print(ob.diffusivity_c_range)
