@@ -9,11 +9,11 @@ from scipy.ndimage import gaussian_filter1d
 
 
 plotFile = "rdf.pdf"
-for ifile, file in enumerate(sorted(glob.glob('*.rdf.dat*'))):
+for ifile, file in enumerate(sorted(glob.glob('*7.rdf.dat*'))):
     data=np.genfromtxt(file, usecols=(0,1,2,3), names=True)
     labels = data.dtype.names[1:]
     # for label in labels:
-    for label in ['gOO']:
+    for label in ['gSS']:
         g = gaussian_filter1d(data[label],3) # was 5
         plt.plot(data['r'], g, label=f'Iter-{ifile}')
     # label=f'{ifile*10}-{(ifile+1)*10}ps'
