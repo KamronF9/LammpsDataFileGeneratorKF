@@ -30,6 +30,8 @@ from string import digits
 import sys
 import pandas as pd
 import matplotlib.pyplot as plt
+from scipy.ndimage import gaussian_filter1d
+import numpy as np
 
 # [H_PtTotal,O_PtTotal,O_OTotal,O_HTotal] # append to df
 
@@ -37,14 +39,16 @@ df = pd.read_csv('data.csv')
 
 print(df)
 
-plt.figure(figsize=(10,7), dpi=300)
+plt.figure(figsize=(7,5), dpi=300)
 
 for i,col in enumerate(df.columns):
     # if i==1:continue
-    plt.plot(df[col], label=col)
+    data=gaussian_filter1d(df[col],2)
+    # data = np.cumsum(df[col])
+    plt.plot(data, label=col)
 
 plt.xlabel('100fs interval')
-plt.ylabel('#')
+plt.ylabel('Count')
 plt.legend()
 plt.grid(True)
 

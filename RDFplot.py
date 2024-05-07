@@ -12,22 +12,24 @@ plotFile = "rdf.pdf"
 for ifile, file in enumerate(sorted(glob.glob('*.rdf.dat*'))):
     data=np.genfromtxt(file, usecols=(0,1,2,3), names=True)
     labels = data.dtype.names[1:]
-    for label in labels:
+    # for label in labels:
+    for label in ['gOO']:
         g = gaussian_filter1d(data[label],3) # was 5
-        plt.plot(data['r'], g)
+        plt.plot(data['r'], g, label=f'Iter-{ifile}')
     # label=f'{ifile*10}-{(ifile+1)*10}ps'
     # label=f'{ifile*10}-{(ifile+1)*40}ps'
     # plt.plot(data['r'], smoothg,label=label)
 
 # plt.plot(rMid, rdf)
-plt.xlim(0, 10)
-plt.ylim(0, 20)
+# plt.xlim(0, 10)
+# plt.ylim(0, 20)
 plt.xlabel('r [A]')
 plt.ylabel('g(r)')
 # plt.legend(['MgNa', 'NaCl', 'MgCl', 'ClCl'])
 # plt.legend(['0-40ps', '40-80ps'])
-plt.legend(labels)
-# plt.legend()
+# plt.legend(['0000', '0001'])
+# plt.legend(labels)
+plt.legend()
 plt.savefig(plotFile, bbox_inches='tight')
 # plt.close()
 
