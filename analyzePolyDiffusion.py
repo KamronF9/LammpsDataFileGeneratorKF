@@ -732,7 +732,7 @@ if len(sys.argv) < 2:
 	print('Usage: LDFG.py <dump File name>')
 	exit(1)
 
-filename = sys.argv[1]  #read vasp filename
+filename = sys.argv[1]  #read dump filename
 
 # global config
 # with open("config", 'r') as ymlfile:
@@ -752,7 +752,9 @@ import numpy as np
 from pymatgen.analysis.diffusion.analyzer import DiffusionAnalyzer
 # frames=outputs.parse_lammps_dumps('/global/homes/k/kamron/Scratch/NNmd/Poly/MC11b_lammps6merWPtandO2inNVTwsmallModel/temp3largeandfloat32/pt2/test100fsInt.dump')
 # frames=outputs.parse_lammps_dumps('test100fsInt.dump')
-frames=outputs.parse_lammps_dumps('pt2mc11bsorted100fs.dump')
+# frames=outputs.parse_lammps_dumps('pt2mc11bsorted100fs.dump')
+# frames=outputs.parse_lammps_dumps('test100fsInt7.dump')
+frames=outputs.parse_lammps_dumps(filename)
 # frames=outputs.parse_lammps_dumps('../test5fsInt.dump')
 #TESTING ^^^^
 
@@ -776,6 +778,8 @@ for iframe, frame in enumerate(frames):
     # print(coords[6579])
     # atomic_symbols = frame.data.element
     type_dict={1:'C',2:'F',3:'H',4:'O',5:'Pt',6:'S'}
+    # print('frame.data.type', frame.data.type)
+    # account for if an atom disappears
     atomic_symbols = [type_dict[i] for i in frame.data.type]
     lattice=frame.box.to_lattice()
     global structure
@@ -798,10 +802,12 @@ for iframe, frame in enumerate(frames):
 
 
 
-cmax=116.
+# cmax=116. # old
+cmax = 99.
 
 # cs = np.array([[30.,90.]])/cmax
-cs = np.array([[8.,30.],[30.,90.],[90.,112.]])/cmax
+# cs = np.array([[8.,30.],[30.,90.],[90.,112.]])/cmax
+cs = np.array([[10.,35.],[35.,65.],[65.,90.]])/cmax # for new structure
 cs = cs.tolist()
 
 for i,c in enumerate(cs):
@@ -813,9 +819,9 @@ for i,c in enumerate(cs):
     # ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 1,100,initial_disp=None,initial_structure=structures[0],c_ranges=[(0.,.25)])
     ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 100,1,initial_disp=None,initial_structure=structures[0],c_ranges=[c]) # ,smoothed=False
     # ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 5,10,initial_disp=None,initial_structure=structures[0],c_ranges=[c]) 
-    print(ob.diffusivity_c_range_components)
-    print(ob.diffusivity_c_range_components_std_dev)
-    print(ob.diffusivity_c_range)
+    print('diffusivity_c_range_components ',ob.diffusivity_c_range_components)
+    print('std ',ob.diffusivity_c_range_components_std_dev)
+    print('total ', ob.diffusivity_c_range)
     # print(ob.diffusivity_c_range_components)
 
     # ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 1,100,None,structures[0])
