@@ -52,7 +52,7 @@ labels = ['Pt/O Surface','Bulk','Pt Surface']
 
 for i in range(3):
     plt.plot(allDiffNP[:,i,3],color=colors[i],label=labels[i])
-    plt.hlines(np.mean(allDiffNP[:,i,3]),0,len(allDiffNP),color=colors[i],linestyle='--')
+    plt.hlines(np.mean(allDiffNP[:,i,3]),0,len(allDiffNP)-1,color=colors[i],linestyle='--')
 plt.legend()
 plt.savefig('totalDiff.pdf')
 plt.close()

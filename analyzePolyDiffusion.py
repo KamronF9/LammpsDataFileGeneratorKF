@@ -771,7 +771,7 @@ if False:
 
 structures = []
 for iframe, frame in enumerate(frames):
-    # if iframe==60: break
+    if iframe==60: break
     print('current frames/total =', iframe, '/')
     # sys.exit(1)
     coords=np.stack((frame.data.x.to_numpy(),frame.data.y.to_numpy(),frame.data.z.to_numpy())).T
@@ -809,9 +809,10 @@ cmax = 99.
 # cs = np.array([[8.,30.],[30.,90.],[90.,112.]])/cmax
 cs = np.array([[10.,35.],[35.,65.],[65.,90.]])/cmax # for new structure
 cs = cs.tolist()
+allMSDs = []
 
 for i,c in enumerate(cs):
-    print(c)
+    print('Region:', c)
     # from_structures(structures,specie,temperature,time_step,step_skip,initial_disp=None,initial_structure=None,**kwargs)
     # ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 1,100,initial_disp=None,initial_structure=structures[0],c_ranges=[(0.25,0.75)])
     # ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 1,100,initial_disp=None,initial_structure=structures[0],c_ranges=[(25.,75.)])
@@ -828,8 +829,23 @@ for i,c in enumerate(cs):
     # ob.msd_components
 
     # print(ob.get_summary_dict())
-    # plt=ob.get_msd_plot()
-    # plt.savefig(f'{i}test.png')
+    plt, df = ob.get_msd_plot(mode='ranges')
+    allMSDs.append(df)
+    df.to_csv(f'{i}MSD.csv')
+    plt.savefig(f'{i}MSD.png')
+    plt.close()
+
+# plot all MSDs
+prop_cycle = plt.rcParams['axes.prop_cycle']
+colors = prop_cycle.by_key()['color']
+
+for i in range(3):
+    # print(allMSDs[i])
+    plt.plot(allMSDs[i]['dt'],allMSDs[i]['msd_c'])
+
+plt.legend(['Pt/O Surface','Bulk','Pt Surface'], loc=2, prop={"size": 20})
+plt.savefig('allMSDs.pdf')
+plt.close()
 
 # results
 # [0.06896551724137931, 0.25862068965517243]
