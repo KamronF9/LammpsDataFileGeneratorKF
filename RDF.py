@@ -178,7 +178,7 @@ for ifile, file in enumerate(sorted(glob.glob('test100fs*'))):
                 r = np.linalg.norm(np.dot(dx, R.T), axis=-1).flatten()  
                 # maybe done to cast relative coords onto coord basis
                 # norm -1 takes -> min(sum(abs(x), axis=0))
-                return np.histogram(r, rBins)[0] * (np.linalg.det(R) / (binVol * len(x1) * len(x2)))
+                return np.histogram(r, rBins)[0] * (np.linalg.det(R) / (binVol * len(x1) * len(x2))) # local / bulk density
             rdf[:,0] += getRDF(xS, xS)
             # rdf[:,1] += getRDF(xF, xF)
             # rdf[:,2] += getRDF(xO, xO)

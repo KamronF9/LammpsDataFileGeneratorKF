@@ -728,11 +728,11 @@ class StructureSite:
         return (False, None)
 
 #-------------- Import Config File -----------
-if len(sys.argv) < 2:
-	print('Usage: LDFG.py <dump File name>')
-	exit(1)
+# if len(sys.argv) < 2:
+# 	print('Usage: LDFG.py <dump File name>')
+# 	exit(1)
 
-filename = sys.argv[1]  #read dump filename
+# filename = sys.argv[1]  #read dump filename
 
 # global config
 # with open("config", 'r') as ymlfile:
@@ -750,53 +750,83 @@ from pymatgen.core import SETTINGS, Element, Lattice, Structure
 import numpy as np
 # from pymatgen.analysis.diffusion import analyzer
 from pymatgen.analysis.diffusion.analyzer import DiffusionAnalyzer
+import glob
 # frames=outputs.parse_lammps_dumps('/global/homes/k/kamron/Scratch/NNmd/Poly/MC11b_lammps6merWPtandO2inNVTwsmallModel/temp3largeandfloat32/pt2/test100fsInt.dump')
 # frames=outputs.parse_lammps_dumps('test100fsInt.dump')
 # frames=outputs.parse_lammps_dumps('pt2mc11bsorted100fs.dump')
 # frames=outputs.parse_lammps_dumps('test100fsInt7.dump')
-frames=outputs.parse_lammps_dumps(filename)
+
 # frames=outputs.parse_lammps_dumps('../test5fsInt.dump')
 #TESTING ^^^^
 
 # frames=outputs.parse_lammps_dumps(filename)
-# loop over every frame
+
 
 # df = pd.DataFrame(columns=('Pt_H','Pt_O','O_O','O_H'))
 
-if False:
-    for iframe, frame in enumerate(frames):
-        1
-        # break
-    print('totalframes ',iframe)
-
 structures = []
-for iframe, frame in enumerate(frames):
-    if iframe==60: break
-    print('current frames/total =', iframe, '/')
-    # sys.exit(1)
-    coords=np.stack((frame.data.x.to_numpy(),frame.data.y.to_numpy(),frame.data.z.to_numpy())).T
-    # print(coords[6579])
-    # atomic_symbols = frame.data.element
-    type_dict={1:'C',2:'F',3:'H',4:'O',5:'Pt',6:'S'}
-    # print('frame.data.type', frame.data.type)
-    # account for if an atom disappears
-    atomic_symbols = [type_dict[i] for i in frame.data.type]
-    lattice=frame.box.to_lattice()
-    global structure
-    structure = Structure(
-        lattice,
-        atomic_symbols,
-        coords,
-        to_unit_cell=False,
-        validate_proximity=False,
-        coords_are_cartesian=True,
-    )
-    structures.append(structure)
+fnames = sorted(glob.glob('*.dump')) # [:2]
 
-# print(coords) # matches dump
-# print(lattice) #
+for filename in fnames:
+    print(filename)
+    frames=outputs.parse_lammps_dumps(filename)
+    # loop over every frame
+    for iframe, frame in enumerate(frames):
+        pass
+        # break
+    iframe += 1 # to set to 1 basis
+    endFrame = iframe-iframe%10
+    print('totalframes ',iframe, ' end by ', endFrame)  
+    
+    frames=outputs.parse_lammps_dumps(filename) 
+    #^^ need to reload to enable generator to reset - must be a better way to do this
+
+    # test100fsInt1.dump
+    # totalframes  250  end by  250
+    # test100fsInt2.dump
+    # totalframes  250  end by  250
+    # test100fsInt3.dump
+    # totalframes  226  end by  220
+    # test100fsInt4.dump
+    # totalframes  250  end by  250
+    # test100fsInt5.dump
+    # totalframes  225  end by  220
+    # test100fsInt6.dump
+    # totalframes  250  end by  250
+    # test100fsInt7.dump
+    # totalframes  224  end by  220
+    # test100fsInt8.dump
+    # totalframes  231  end by  230
 
 
+    for iframe, frame in enumerate(frames):
+        # if iframe==60: break
+        if iframe+1 == endFrame: break
+        print('current frames/total =', iframe+1, '/' , endFrame) # 1 basis
+        # sys.exit(1)
+        coords=np.stack((frame.data.x.to_numpy(),frame.data.y.to_numpy(),frame.data.z.to_numpy())).T
+        # print(coords[6579])
+        # atomic_symbols = frame.data.element
+        type_dict={1:'C',2:'F',3:'H',4:'O',5:'Pt',6:'S'}
+        # print('frame.data.type', frame.data.type)
+        # account for if an atom disappears
+        atomic_symbols = [type_dict[i] for i in frame.data.type]
+        lattice=frame.box.to_lattice()
+        global structure
+        structure = Structure(
+            lattice,
+            atomic_symbols,
+            coords,
+            to_unit_cell=False,
+            validate_proximity=False,
+            coords_are_cartesian=True,
+        )
+        structures.append(structure)
+
+    # print(coords) # matches dump
+    # print(lattice) #
+
+# print(structures[0])
 
 # ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 1,100,initial_disp=None,initial_structure=structures[0],c_ranges=[(0.,.25)])
 
@@ -809,7 +839,7 @@ cmax = 99.
 # cs = np.array([[8.,30.],[30.,90.],[90.,112.]])/cmax
 cs = np.array([[10.,35.],[35.,65.],[65.,90.]])/cmax # for new structure
 cs = cs.tolist()
-allMSDs = []
+# allMSDs = []
 
 for i,c in enumerate(cs):
     print('Region:', c)
@@ -830,22 +860,11 @@ for i,c in enumerate(cs):
 
     # print(ob.get_summary_dict())
     plt, df = ob.get_msd_plot(mode='ranges')
-    allMSDs.append(df)
+    # allMSDs.append(df)
     df.to_csv(f'{i}MSD.csv')
     plt.savefig(f'{i}MSD.png')
     plt.close()
 
-# plot all MSDs
-prop_cycle = plt.rcParams['axes.prop_cycle']
-colors = prop_cycle.by_key()['color']
-
-for i in range(3):
-    # print(allMSDs[i])
-    plt.plot(allMSDs[i]['dt'],allMSDs[i]['msd_c'])
-
-plt.legend(['Pt/O Surface','Bulk','Pt Surface'], loc=2, prop={"size": 20})
-plt.savefig('allMSDs.pdf')
-plt.close()
 
 # results
 # [0.06896551724137931, 0.25862068965517243]
