@@ -52,4 +52,4 @@ plt.ylabel('Count')
 plt.legend()
 plt.grid(True)
 
-plt.savefig('test.png')
+plt.savefig('surfaceReactionCounts.png')

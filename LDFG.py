@@ -9,7 +9,8 @@
 #numpy                     1.23.3                   pypi_0    pypi
 #pymatgen                  2023.1.30                pypi_0    pypi
 
-#PM env deepmd3
+#PM env deepmd3,
+#kestrel mace_env
 
 #TODO  add read in of structure from poscar instead of config
 
