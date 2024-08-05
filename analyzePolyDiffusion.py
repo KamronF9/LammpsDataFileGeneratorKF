@@ -769,6 +769,7 @@ import glob
 
 structures = []
 fnames = sorted(glob.glob('*.dump')) # [:2]
+print(fnames)
 
 for filename in fnames:
     print(filename)
@@ -778,7 +779,10 @@ for filename in fnames:
         pass
         # break 
     iframe += 1 # to set to 1 basis
-    endFrame = iframe-iframe%10
+    endFrame = iframe
+    # endFrame = iframe-iframe%10 
+    # every frame is 100fs and every 100fs which is better - this is not needed now
+    # before I only saved a data file every 1ps hence the even 10 frame end point needed
     print('totalframes ',iframe, ' end by ', endFrame)  
     
     frames=outputs.parse_lammps_dumps(filename) 
