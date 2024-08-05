@@ -32,6 +32,8 @@ import pandas as pd
 
 from pymatgen.analysis.diffusion import analyzer
 
+import contextlib
+
 # Returns known atom types in a list
 
 # os.chdir(r'agso3Ex')  # adjust later
@@ -751,6 +753,7 @@ import numpy as np
 # from pymatgen.analysis.diffusion import analyzer
 from pymatgen.analysis.diffusion.analyzer import DiffusionAnalyzer
 import glob
+
 # frames=outputs.parse_lammps_dumps('/global/homes/k/kamron/Scratch/NNmd/Poly/MC11b_lammps6merWPtandO2inNVTwsmallModel/temp3largeandfloat32/pt2/test100fsInt.dump')
 # frames=outputs.parse_lammps_dumps('test100fsInt.dump')
 # frames=outputs.parse_lammps_dumps('pt2mc11bsorted100fs.dump')
@@ -773,7 +776,7 @@ for filename in fnames:
     # loop over every frame
     for iframe, frame in enumerate(frames):
         pass
-        # break
+        # break 
     iframe += 1 # to set to 1 basis
     endFrame = iframe-iframe%10
     print('totalframes ',iframe, ' end by ', endFrame)  
@@ -803,7 +806,7 @@ for filename in fnames:
         # if iframe==60: break
         if iframe+1 == endFrame: break
         print('current frames/total =', iframe+1, '/' , endFrame) # 1 basis
-        # sys.exit(1)
+        
         coords=np.stack((frame.data.x.to_numpy(),frame.data.y.to_numpy(),frame.data.z.to_numpy())).T
         # print(coords[6579])
         # atomic_symbols = frame.data.element
@@ -812,6 +815,7 @@ for filename in fnames:
         # account for if an atom disappears
         atomic_symbols = [type_dict[i] for i in frame.data.type]
         lattice=frame.box.to_lattice()
+        
         global structure
         structure = Structure(
             lattice,
@@ -823,6 +827,8 @@ for filename in fnames:
         )
         structures.append(structure)
 
+        
+
     # print(coords) # matches dump
     # print(lattice) #
 
@@ -833,37 +839,53 @@ for filename in fnames:
 
 
 # cmax=116. # old
-cmax = 99.
+# cmax = 99.
+cmax = lattice.c
+# get the fraction = Pt 10Ang from botton and top
+fractRangeBottom = 10./cmax
+fractRangeTop= 1. - 10./cmax
+rangeBetween = fractRangeTop - fractRangeBottom
+fractTwoThirds = 2./3. * rangeBetween + fractRangeBottom
+fractOneThirds = 1./3. * rangeBetween + fractRangeBottom
 
 # cs = np.array([[30.,90.]])/cmax
 # cs = np.array([[8.,30.],[30.,90.],[90.,112.]])/cmax
-cs = np.array([[10.,35.],[35.,65.],[65.,90.]])/cmax # for new structure
+# cs = np.array([[10.,35.],[35.,65.],[65.,90.]])/cmax # for 21 nafion structure
+cs = np.array([[fractRangeBottom,fractOneThirds],[fractOneThirds,fractTwoThirds],[fractTwoThirds,fractRangeTop]]) # for 14 nafions or any variant in scale
 cs = cs.tolist()
+
+# sys.exit(1)
 # allMSDs = []
+with open('diffResults.txt', 'w') as fout:
+    with contextlib.redirect_stdout(fout): 
+        print('cmax ', cmax)
+        print('cs fractions - ',cs)
+        # [[0.12696370256529627, 0.3756545675217654], [0.3756545675217654, 0.6243454324782345], [0.6243454324782345, 0.8730362974347037]]
 
-for i,c in enumerate(cs):
-    print('Region:', c)
-    # from_structures(structures,specie,temperature,time_step,step_skip,initial_disp=None,initial_structure=None,**kwargs)
-    # ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 1,100,initial_disp=None,initial_structure=structures[0],c_ranges=[(0.25,0.75)])
-    # ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 1,100,initial_disp=None,initial_structure=structures[0],c_ranges=[(25.,75.)])
-    # ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 1,100,initial_disp=None,initial_structure=structures[0],c_ranges=[(0.,25.),(25.,75.)])
-    # ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 1,100,initial_disp=None,initial_structure=structures[0],c_ranges=[(0.,.25)])
-    ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 100,1,initial_disp=None,initial_structure=structures[0],c_ranges=[c]) # ,smoothed=False
-    # ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 5,10,initial_disp=None,initial_structure=structures[0],c_ranges=[c]) 
-    print('diffusivity_c_range_components ',ob.diffusivity_c_range_components)
-    print('std ',ob.diffusivity_c_range_components_std_dev)
-    print('total ', ob.diffusivity_c_range)
-    # print(ob.diffusivity_c_range_components)
+        for i,c in enumerate(cs):
 
-    # ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 1,100,None,structures[0])
-    # ob.msd_components
+            print('Region:', c)
+            # from_structures(structures,specie,temperature,time_step,step_skip,initial_disp=None,initial_structure=None,**kwargs)
+            # ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 1,100,initial_disp=None,initial_structure=structures[0],c_ranges=[(0.25,0.75)])
+            # ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 1,100,initial_disp=None,initial_structure=structures[0],c_ranges=[(25.,75.)])
+            # ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 1,100,initial_disp=None,initial_structure=structures[0],c_ranges=[(0.,25.),(25.,75.)])
+            # ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 1,100,initial_disp=None,initial_structure=structures[0],c_ranges=[(0.,.25)])
+            ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 100,1,initial_disp=None,initial_structure=structures[0],c_ranges=[c]) # ,smoothed=False
+            # ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 5,10,initial_disp=None,initial_structure=structures[0],c_ranges=[c]) 
+            print('diffusivity_c_range_components ',ob.diffusivity_c_range_components)
+            print('std ',ob.diffusivity_c_range_components_std_dev)
+            print('total ', ob.diffusivity_c_range)
+            # print(ob.diffusivity_c_range_components)
 
-    # print(ob.get_summary_dict())
-    plt, df = ob.get_msd_plot(mode='ranges')
-    # allMSDs.append(df)
-    df.to_csv(f'{i}MSD.csv')
-    plt.savefig(f'{i}MSD.png')
-    plt.close()
+            # ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 1,100,None,structures[0])
+            # ob.msd_components
+
+            # print(ob.get_summary_dict())
+            plt, df = ob.get_msd_plot(mode='ranges')
+            # allMSDs.append(df)
+            df.to_csv(f'{i}MSD.csv')
+            plt.savefig(f'{i}MSD.png')
+            plt.close()
 
 
 # results
@@ -889,143 +911,38 @@ for i,c in enumerate(cs):
 # ob.chg_diffusivity_std_dev          ob.diffusivity_std_dev              ob.from_vaspruns(                   ob.max_ion_displacements            ob.step_skip                        
 # ob.conductivity                     ob.disp                             ob.get_drift_corrected_structures(  ob.min_obs                          ob.structure                        
 # ob.conductivity_components          ob.drift                            ob.get_framework_rms_plot(          ob.mscd                             ob.temperature       
-sys.exit(1)
 
+# print(lattice) 
+# 31.911166 0.000000 0.000000
+# 0.000000 36.847841 0.000000
+# 0.000000 0.000000 78.762668
+#         >>> lattice.
+# lattice.REDIRECT                              lattice.get_frac_coords_from_lll(             lattice.load(
+# lattice.a                                     lattice.get_fractional_coords(                lattice.matrix
+# lattice.abc                                   lattice.get_lll_frac_coords(                  lattice.metric_tensor
+# lattice.alpha                                 lattice.get_lll_reduced_lattice(              lattice.monoclinic(
+# lattice.angles                                lattice.get_miller_index_from_coords(         lattice.norm(
+# lattice.as_dict(                              lattice.get_niggli_reduced_lattice(           lattice.orthorhombic(
+# lattice.b                                     lattice.get_partial_json(                     lattice.parameters
+# lattice.beta                                  lattice.get_points_in_sphere(                 lattice.pbc
+# lattice.c                                     lattice.get_points_in_sphere_old(             lattice.reciprocal_lattice
+# lattice.copy(                                 lattice.get_points_in_sphere_py(              lattice.reciprocal_lattice_crystallographic
+# lattice.cubic(                                lattice.get_recp_symmetry_operation(          lattice.rhombohedral(
+# lattice.d_hkl(                                lattice.get_vector_along_lattice_directions(  lattice.save(
+# lattice.dot(                                  lattice.get_wigner_seitz_cell(                lattice.scale(
+# lattice.find_all_mappings(                    lattice.hexagonal(                            lattice.selling_dist(
+# lattice.find_mapping(                         lattice.inv_matrix                            lattice.selling_vector
+# lattice.from_dict(                            lattice.is_3d_periodic                        lattice.tetragonal(
+# lattice.from_parameters(                      lattice.is_hexagonal(                         lattice.to_json(
+# lattice.gamma                                 lattice.is_orthogonal                         lattice.unsafe_hash(
+# lattice.get_all_distances(                    lattice.lengths                               lattice.validate_monty_v1(
+# lattice.get_brillouin_zone(                   lattice.lll_inverse                           lattice.validate_monty_v2(
+# lattice.get_cartesian_coords(                 lattice.lll_mapping                           lattice.volume
+# lattice.get_distance_and_image(               lattice.lll_matrix                
 
-'''
-    # structure_pos = Poscar.from_file(filename)
-    # structure = structure_pos.structure
-    # print(structure.lattice) XX
-    sites = structure.sites
-    position_order_assignment = type_assignment_execution_order()
-    global atom_sites
-    atom_sites = [None] * len(sites)
-    for i in range(len(sites)):
-        # This generates the class from above for site_in_Structure
-        atom_sites[i] = StructureSite(str(sites[i].species_string))
-
-
-
-
-    #-------------- Intialize Lists -------------
-    atom_types_general = known_atom_types_general()
-    i, types, dependencies = 0, [
-        None] * len(atom_types_general), [None] * len(atom_types_general)
-
-    for each in atom_types_general:
-        types[i] = each[0]
-        dependencies[i] = each[4].values()
-        # print(each[4]) 0:none
-        i += 1
-
-    #--------- Find Nearest Neighbors -------------
-    # nn_sites = structure.get_all_neighbors(max_bond_length(), include_index=True)
-    nn_sites = structure.get_all_neighbors(r=max_bond_length())
-    # nn_sites[65]  S 
-    # nn_sites[36]  OOOC
-
-    # print('s1 element',structure.species[27496-1])
-    # print('nn_sites',nn_sites[27496-1])
-    # # get all neigh returns [(site, dist) ...]
-    # print('s2',nn_sites[27496-1][0][2])
-    # print('bond dist',nn_sites[27496-1][0][1])
-    # print('[coord] element',nn_sites[27496-1][0][0])
-    # outputs
-    # s1 element F
-    # nn_sites [PeriodicSite: C (41.2143, 47.1704, 30.9792) [0.6546, 0.6827, 0.2667], PeriodicSite: C (42.4738, 46.4372, 30.3612) [0.6746, 0.6721, 0.2613], PeriodicSite: F (42.0048, 45.2571, 29.8931) [0.6672, 0.6550, 0.2573], PeriodicSite: F (43.3704, 46.1663, 31.3109) [0.6889, 0.6682, 0.2695]]
-    # s2 27491
-    # bond dist 2.4623963247211025
-    # [coord] element [41.2143 47.1704 30.9792] C
-
-
-    #------------- Bonded Atoms Assignment ----------------
-    # Iterates through each position assignment for Bond Assignment.
-    excludeFromBonds = config['excludeFromBonds']
-    try:
-        onlyFindBonds = config['onlyFindBonds']
-    except:
-        onlyFindBonds = False
-    # print(config)
-    print('onlyFindBonds-',onlyFindBonds)
-
-    # len(np.argwhere(np.array([str(i) for i in structure.species]) == 'Pt'))
-    # len(np.argwhere(np.array([str(i) for i in structure.species]) == 'Pt' )
-    zVals = np.array(structure.cart_coords)[:,2]
-    sitesNearSurfandSurf = np.argwhere((zVals<8.)&(6.<zVals))
-    # print(sitesNearSurfandSurf[0][0])
-    # sys.exit(1)
-
-    # PtTopLayerSites = []
-    # for siteval in range(len(sites)):
-    #     if structure.species[siteval] == 'Element Pt' and 6.<structure.cart_coords[siteval][2]<7.:
-    #         PtTopLayerSites.append(siteval)
-    # print(PtTopLayerSites)
-
-    H_PtTotal = 0
-    O_PtTotal = 0
-    O_OTotal = 0
-    O_HTotal = 0
-    OsiteOnSurf = []
-
-    # siteval = 0
-    for siteval in sitesNearSurfandSurf:
-        siteval = siteval[0]
-
-        if str(structure.species[siteval])=='H':
-            each_site = nn_sites[siteval]      
-            for each in each_site:
-                site2 = each[2]
-                atDistance = each[1]
-                if str(structure.species[site2]) == 'Pt':
-                    # print('H Pt dist ', atDistance)
-                    if site_bonded(siteval, site2, atDistance):  # s1#, s2#,  length bw atoms
-                        # print('H Pt bond')
-                        H_PtTotal += 1
-
-        if str(structure.species[siteval])=='O':
-            each_site = nn_sites[siteval]      
-            for each in each_site:
-                site2 = each[2]
-                atDistance = each[1]
-                if str(structure.species[site2]) == 'Pt':
-                    # print('H Pt dist ', atDistance)
-                    if site_bonded(siteval, site2, atDistance):  # s1#, s2#,  length bw atoms
-                        # print('O Pt bond')
-                        O_PtTotal += 1
-                        OsiteOnSurf.append(siteval)
-
-    # go through O on Pt surface 
-    for siteval in OsiteOnSurf:  
-        # double check still O
-        if str(structure.species[siteval])=='O':
-            each_site = nn_sites[siteval]      
-            for each in each_site:
-                site2 = each[2]
-                atDistance = each[1]
-
-                if str(structure.species[site2]) == 'O':
-                    # print('H Pt dist ', atDistance)
-                    if site_bonded(siteval, site2, atDistance):  # s1#, s2#,  length bw atoms
-                        # print('O Pt bond')
-                        O_OTotal += 1
-                
-                if str(structure.species[site2]) == 'H':
-                    # print('H Pt dist ', atDistance)
-                    if site_bonded(siteval, site2, atDistance):  # s1#, s2#,  length bw atoms
-                        # print('O Pt bond')
-                        O_HTotal += 1
-
-                        
-                        
-
-
-    df.loc[len(df.index)] = [H_PtTotal,O_PtTotal,O_OTotal,O_HTotal] # append to df
-
-    print(df)
-    df.to_csv('data.csv',index=False)
-    # print(f"H_PtTotal {H_PtTotal}")
-    # print(f"O_PtTotal {O_PtTotal}")
-    # print(f"O_OTotal {O_OTotal}")
-    # print(f"O_HTotal {O_HTotal}")
-
-'''
+# >>> lattice.a
+# 31.9111661187
+# >>> lattice.b
+# 36.8478412065
+# >>> lattice.c
+# 78.7626683686
