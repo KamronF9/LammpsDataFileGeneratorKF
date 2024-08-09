@@ -768,7 +768,8 @@ import glob
 # df = pd.DataFrame(columns=('Pt_H','Pt_O','O_O','O_H'))
 
 structures = []
-fnames = sorted(glob.glob('*.dump')) # [:2]
+# fnames = sorted(glob.glob('*.dump'))[:1] # # just use first 0,1 [:2]
+fnames = sorted(glob.glob('*.dump'))  # use all 
 print(fnames)
 
 for filename in fnames:
@@ -807,8 +808,9 @@ for filename in fnames:
 
 
     for iframe, frame in enumerate(frames):
-        # if iframe==60: break
-        if iframe+1 == endFrame: break
+        # if iframe==10: break
+        # if iframe+1 == endFrame: break
+        if iframe == endFrame: break
         print('current frames/total =', iframe+1, '/' , endFrame) # 1 basis
         
         coords=np.stack((frame.data.x.to_numpy(),frame.data.y.to_numpy(),frame.data.z.to_numpy())).T
@@ -855,7 +857,8 @@ fractOneThirds = 1./3. * rangeBetween + fractRangeBottom
 # cs = np.array([[30.,90.]])/cmax
 # cs = np.array([[8.,30.],[30.,90.],[90.,112.]])/cmax
 # cs = np.array([[10.,35.],[35.,65.],[65.,90.]])/cmax # for 21 nafion structure
-cs = np.array([[fractRangeBottom,fractOneThirds],[fractOneThirds,fractTwoThirds],[fractTwoThirds,fractRangeTop]]) # for 14 nafions or any variant in scale
+cs = np.array([[fractRangeBottom,fractRangeTop],[fractRangeBottom,fractOneThirds],[fractOneThirds,fractTwoThirds],[fractTwoThirds,fractRangeTop]]) # for 14 nafions or any variant in scale
+# cs = np.array([[fractRangeBottom,fractRangeTop]]) # test full range
 cs = cs.tolist()
 
 # sys.exit(1)
@@ -874,7 +877,7 @@ with open('diffResults.txt', 'w') as fout:
             # ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 1,100,initial_disp=None,initial_structure=structures[0],c_ranges=[(25.,75.)])
             # ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 1,100,initial_disp=None,initial_structure=structures[0],c_ranges=[(0.,25.),(25.,75.)])
             # ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 1,100,initial_disp=None,initial_structure=structures[0],c_ranges=[(0.,.25)])
-            ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 100,1,initial_disp=None,initial_structure=structures[0],c_ranges=[c]) # ,smoothed=False
+            ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 100,1,initial_disp=None,initial_structure=structures[0],c_ranges=[c], smoothed=False) # ,smoothed=False
             # ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 5,10,initial_disp=None,initial_structure=structures[0],c_ranges=[c]) 
             print('diffusivity_c_range_components ',ob.diffusivity_c_range_components)
             print('std ',ob.diffusivity_c_range_components_std_dev)
@@ -887,10 +890,16 @@ with open('diffResults.txt', 'w') as fout:
             # print(ob.get_summary_dict())
             plt, df = ob.get_msd_plot(mode='ranges')
             # allMSDs.append(df)
+
             df.to_csv(f'{i}MSD.csv')
             plt.savefig(f'{i}MSD.png')
             plt.close()
+            
+            plt, df = ob.get_msd_plot(mode='slope')
 
+            df.to_csv(f'{i}MSDslope.csv')
+            plt.savefig(f'{i}MSDslope.png')
+            plt.close()
 
 # results
 # [0.06896551724137931, 0.25862068965517243]

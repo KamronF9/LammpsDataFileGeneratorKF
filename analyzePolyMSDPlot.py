@@ -3,6 +3,8 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
+from scipy.ndimage import gaussian_filter1d
+
 allMSDs = []
 for i in range(3):
     df = pd.read_csv(f'{i}MSD.csv')
@@ -18,7 +20,7 @@ plt.figure(figsize=(6,4))
 for i in range(3):
     # print(allMSDs[i])
     # plt.loglog(allMSDs[i]['dt'],allMSDs[i]['msd_c'])
-    plt.plot(allMSDs[i]['dt'],allMSDs[i]['msd_c'])
+    plt.plot(allMSDs[i]['dt'],gaussian_filter1d(allMSDs[i]['msd_c'],3))
 
 plt.legend(['Pt/O Surface','Bulk','Pt Surface'])  #, loc=2, prop={"size": 20}
 # plt.axis('square')
