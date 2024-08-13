@@ -17,8 +17,11 @@ import glob
 # data.Element(           data.MODULE_DIR         data.SECTION_KEYWORDS   data.YAML(              data.loadfn(            data.zopen(             
 # data.ForceField(        data.MSONable(          data.StringIO(          data.annotations        data.np                 
 
+dataName = glob.glob('*.data')[0]
+# lammpsData = data.LammpsData.from_file('07polyHydroniumWaterPtExtHydr9Compressed.data')
+lammpsData = data.LammpsData.from_file(dataName)
 
-lammpsData = data.LammpsData.from_file('07polyHydroniumWaterPtExtHydr9Compressed.data')
+
 # >>> lammpsData.
 # lammpsData.REDIRECT                 lammpsData.from_dict(               lammpsData.masses                   lammpsData.unsafe_hash(
 # lammpsData.as_dict(                 lammpsData.from_ff_and_topologies(  lammpsData.save(                    lammpsData.validate_monty_v1(
@@ -60,7 +63,7 @@ atIDbondedAll = np.concatenate((atIDbonded1,atIDbonded2))
 for ifile, file in enumerate(sorted(glob.glob('test100fs*'))):
     inFile = file
     intervalNum = str(ifile) #inFile[-6] # interval int value 
-    outFile = 'RDF'+ intervalNum #basename for RDF files
+    outFile = 'OO_RDF'+ intervalNum #basename for RDF files
 
 
     # os.chdir(r'/home/kamron/NaCl_MgCl2/integrate')

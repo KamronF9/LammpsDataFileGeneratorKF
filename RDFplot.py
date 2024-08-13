@@ -6,16 +6,20 @@ import matplotlib as mpl; mpl.use('Agg')
 import matplotlib.pyplot as plt
 import glob
 from scipy.ndimage import gaussian_filter1d
+import pandas as pd
 
-atPairs = 'OO' # 'SS'
+# atPairs = 'OO' 
+# atPairs = 'SS' 
+atPairs = sys.argv[1]
+hydrLevel = sys.argv[2]
 
 allData = [] # compile each data
 lenData = []
 
-plotFile = "AavgAllRDF.pdf"
+plotFile = atPairs+"avgAllRDF.pdf"
 plt.figure(figsize=(4,3))
 # for ifile, file in enumerate(sorted(glob.glob('*7.rdf.dat*'))):
-for ifile, file in enumerate(sorted(glob.glob('*.rdf.dat*'))):
+for ifile, file in enumerate(sorted(glob.glob(f'{atPairs}_*.rdf.dat*'))):
     data=np.genfromtxt(file, usecols=(0,1,2,3), names=True)
     labels = data.dtype.names[1:]
     
@@ -44,6 +48,7 @@ if plotAll:
     plt.plot(allXeven,allYmean)
     plt.fill_between(allXeven,allYmean-allYstd,allYmean+allYstd,alpha=0.5,color='red')
 
+
 # plt.plot(rMid, rdf)
 # plt.xlim(0, 10)
 # plt.ylim(0, 20)
@@ -56,6 +61,11 @@ plt.ylabel('g(r)')
 plt.legend([atPairs])
 plt.savefig(plotFile, bbox_inches='tight')
 plt.close()
+
+# save data:
+df = pd.DataFrame({'r':allXeven,'g':allYmean})
+df.to_csv(f'hydr_{hydrLevel}_{atPairs}_avg_RDF.csv')
+
 
 # print('DONE')
 
@@ -87,5 +97,9 @@ plt.xlim(0., 1.)
 # plt.ylim(0, 20)
 plt.xlabel('q($\\AA^{-1}$)')
 plt.ylabel('Intensity')
-plt.savefig('StructureFactor.pdf', bbox_inches='tight')
+plt.savefig(f'{atPairs}_StructureFactor.pdf', bbox_inches='tight')
 plt.close()
+
+# save data:
+df = pd.DataFrame({'q':k,'Intensity':S_k})
+df.to_csv(f'hydr_{hydrLevel}_{atPairs}_avg_StructureFactor.csv')

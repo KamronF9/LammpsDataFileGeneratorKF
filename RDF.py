@@ -15,7 +15,7 @@ import glob
 for ifile, file in enumerate(sorted(glob.glob('test100fs*'))):
     inFile = file
     intervalNum = str(ifile) #inFile[-6] # interval int value 
-    outFile = 'RDF'+ intervalNum #basename for RDF files
+    outFile = 'SS_RDF'+ intervalNum #basename for RDF files
 
 
     # os.chdir(r'/home/kamron/NaCl_MgCl2/integrate')
@@ -123,8 +123,8 @@ for ifile, file in enumerate(sorted(glob.glob('test100fs*'))):
             refLine = iLine+1
             R = np.zeros((3,3))
             Tric = np.zeros((6))
-            # bounds = np.zeros((3,3)) # use depending on the dump style of box
-            bounds = np.zeros((3,2))
+            bounds = np.zeros((3,3)) # use depending on the dump style of box
+            # bounds = np.zeros((3,2))
         # Atomic positions
         if atposActive and iLine<refLine+nAtoms:
             iRow = iLine-refLine
