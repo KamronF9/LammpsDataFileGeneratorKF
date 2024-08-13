@@ -8,7 +8,7 @@ from pymatgen.io.lammps import data, outputs
 from pymatgen.core import SETTINGS, Element, Lattice, Structure
 import numpy as np
 # from pymatgen.analysis.diffusion import analyzer
-from pymatgen.analysis.diffusion.analyzer import DiffusionAnalyzer
+# from pymatgen.analysis.diffusion.analyzer import DiffusionAnalyzer
 import glob
 # >>> data.
 # data.ATOMS_HEADERS      data.LammpsBox(         data.Molecule(          data.Structure(         data.clean_lines(       data.pd                 
@@ -27,9 +27,27 @@ lammpsData = data.LammpsData.from_file('07polyHydroniumWaterPtExtHydr9Compressed
 # lammpsData.box                      lammpsData.get_partial_json(        lammpsData.structure                lammpsData.write_file(
 # lammpsData.disassemble(             lammpsData.get_string(              lammpsData.to_json(                 
 # lammpsData.force_field              lammpsData.load(                    lammpsData.topology 
-lammpsData
+# print(np.array(lammpsData.as_dict()['topology']['Bonds'])) 
+# [[   2    1  128]
+#  [   2    1    2]
+#  [   3    1 1704]
+#  ...
+#  [   1 4686 5532]
+#  [   1 4687 5530]
+#  [   1 4690 5523]]
+# print(np.array(lammpsData.as_dict()['topology']['Bonds'])[:,1]) 
+# [   1    1    1 ... 4686 4687 4690]
 
-sys.exit(1)
+atIDbonded1 = np.array(lammpsData.as_dict()['topology']['Bonds'])[:,1]
+atIDbonded2 = np.array(lammpsData.as_dict()['topology']['Bonds'])[:,2]
+atIDbondedAll = np.concatenate((atIDbonded1,atIDbonded2))
+# print(np.shape(atIDbondedAll)) #(8664,)
+
+# atID = 5000 # 1
+# if atID not in atIDbondedAll:
+#     print(atID, 'not bonded') # works 5000 is pt not bonded, 1 is.
+
+# sys.exit(1)
 
 # need at least two timesteps
 # if len(sys.argv)<2:
@@ -150,22 +168,28 @@ for ifile, file in enumerate(sorted(glob.glob('test100fs*'))):
             refLine = iLine+1
             R = np.zeros((3,3))
             Tric = np.zeros((6))
-            # bounds = np.zeros((3,3)) # use depending on the dump style of box
-            bounds = np.zeros((3,2))
+            bounds = np.zeros((3,3)) # use depending on the dump style of box
+            # bounds = np.zeros((3,2)) 
         # Atomic positions
         if atposActive and iLine<refLine+nAtoms:
             iRow = iLine-refLine
             tokens = line.split()
-            atNames.append(tokens[2])  # index for name str Pt S
-            atpos[iRow] = [ float(tok) for tok in tokens[3:6] ]  
+            atID = int(tokens[0])
+            
+            # add atoms to RDF only if not bonded
+            if atID not in atIDbondedAll:
+                atNames.append(tokens[2])  # index for name str Pt S
+                atpos.append([ float(tok) for tok in tokens[3:6] ])
             # if q in dump  then use 3:6 - 3,4,5 adjusted since now charge is included 
             if iRow+1==nAtoms:
                 atposActive = False
                 atNames = np.array(atNames)
+                atpos = np.array(atpos)
         if line.startswith('ITEM: ATOMS'):
             atposActive = True
             refLine = iLine+1 # start of where to read in atom positions
-            atpos = np.zeros((nAtoms,3))
+            # atpos = np.zeros((nAtoms,3))
+            atpos = []
             atNames = []
         # Number of atoms
         if atomsActive:
@@ -195,9 +219,9 @@ for ifile, file in enumerate(sorted(glob.glob('test100fs*'))):
                 rdfInited = True
 
             x = np.dot(atpos, np.linalg.inv(R.T))   # normalize positions to lattice shape
-            xS = x[np.where(atNames=='S')[0]]
+            # xS = x[np.where(atNames=='S')[0]]
             # xF = x[np.where(atNames=='F')[0]]
-            # xO = x[np.where(atNames=='O')[0]]
+            xO = x[np.where(atNames=='O')[0]]
             # xNa = x[np.where(atNames==3)[0]]
             def getRDF(x1, x2):
                 dx = x1[None,:,:] - x2[:,None,:]  # None adds a dimension 
@@ -206,7 +230,8 @@ for ifile, file in enumerate(sorted(glob.glob('test100fs*'))):
                 # maybe done to cast relative coords onto coord basis
                 # norm -1 takes -> min(sum(abs(x), axis=0))
                 return np.histogram(r, rBins)[0] * (np.linalg.det(R) / (binVol * len(x1) * len(x2))) # local / bulk density
-            rdf[:,0] += getRDF(xS, xS)
+            rdf[:,0] += getRDF(xO, xO)
+            # rdf[:,0] += getRDF(xS, xS)
             # rdf[:,1] += getRDF(xF, xF)
             # rdf[:,2] += getRDF(xO, xO)
             # rdf[:,2] += getRDF(xMg, xCl)
@@ -215,7 +240,7 @@ for ifile, file in enumerate(sorted(glob.glob('test100fs*'))):
             if saveRDF and saveIntermedRDFs:
                 rdfFile = outFile+".rdf.dat"+str(saveNum)
                 rdf *= (1./resetRDFnSteps)
-                np.savetxt(rdfFile, np.hstack((rMid[:,None], rdf)), header='r gSS', comments='') #  gFF gOO
+                np.savetxt(rdfFile, np.hstack((rMid[:,None], rdf)), header='r gOO', comments='') #  gFF gOO gSS
                 rdfInited = False # reset rdf
                 saveRDF = False # reset save flag
 
@@ -225,7 +250,7 @@ for ifile, file in enumerate(sorted(glob.glob('test100fs*'))):
     if not saveIntermedRDFs:
         rdfFile = outFile+".rdf.datAll"
         rdf *= (1./nSteps)
-        np.savetxt(rdfFile, np.hstack((rMid[:,None], rdf)), header='r gSS', comments='') #  gFF gOO
+        np.savetxt(rdfFile, np.hstack((rMid[:,None], rdf)), header='r gOO', comments='') #  gFF gOO
         # rdfInited = False # reset rdf
         # saveRDF = False # reset save flag        
 

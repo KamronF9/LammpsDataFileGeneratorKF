@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import glob
 from scipy.ndimage import gaussian_filter1d
 
-
+atPairs = 'OO' # 'SS'
 
 allData = [] # compile each data
 lenData = []
@@ -19,13 +19,13 @@ for ifile, file in enumerate(sorted(glob.glob('*.rdf.dat*'))):
     data=np.genfromtxt(file, usecols=(0,1,2,3), names=True)
     labels = data.dtype.names[1:]
     
-    allData.append(data['gSS'])
-    lenData.append(len(data['gSS']))
+    allData.append(data['g'+atPairs])
+    lenData.append(len(data['g'+atPairs]))
 
     plotEach = False
     if plotEach:
     # for label in labels:
-        for label in ['gSS']:
+        for label in ['g'+atPairs]:
             g = gaussian_filter1d(data[label],3) # was 5
             plt.plot(data['r'], g, label=f'Iter-{ifile}')
         # label=f'{ifile*10}-{(ifile+1)*10}ps'
@@ -53,8 +53,39 @@ plt.ylabel('g(r)')
 # plt.legend(['0-40ps', '40-80ps'])
 # plt.legend(['0000', '0001'])
 # plt.legend(labels)
-plt.legend(['S-S'])
+plt.legend([atPairs])
 plt.savefig(plotFile, bbox_inches='tight')
-# plt.close()
+plt.close()
 
 # print('DONE')
+
+
+# Strucure factor:
+from scipy.fft import fft
+
+r = data['r']
+g_r = allYmean
+rho = g_r[-1]
+
+# Method 1
+k = np.linspace(0.01, max(r), 1000)  # Example k values
+S_k = np.zeros_like(k)
+for i, k_val in enumerate(k):
+    integrand = r * (g_r - 1) * np.sin(k_val * r) / (k_val * r)
+    S_k[i] = 1 + 4 * np.pi * rho * np.trapz(integrand, r)
+
+# # Method 2
+# # Calculate the structure factor
+# k = np.fft.fftfreq(len(r), r[1] - r[0])
+# S_k = 1 + rho * np.fft.fft(g_r * r**2) * (r[1] - r[0])
+
+# # Normalize
+S_k = np.real(S_k) / len(r)
+
+plt.plot(k, S_k)
+plt.xlim(0., 1.)
+# plt.ylim(0, 20)
+plt.xlabel('q($\\AA^{-1}$)')
+plt.ylabel('Intensity')
+plt.savefig('StructureFactor.pdf', bbox_inches='tight')
+plt.close()
