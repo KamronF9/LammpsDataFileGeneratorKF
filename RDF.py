@@ -15,7 +15,7 @@ import glob
 for ifile, file in enumerate(sorted(glob.glob('test100fs*'))):
     inFile = file
     intervalNum = str(ifile) #inFile[-6] # interval int value 
-    outFile = 'SS_RDF'+ intervalNum #basename for RDF files
+    outFile = 'All_RDF'+ intervalNum #basename for RDF files
 
 
     # os.chdir(r'/home/kamron/NaCl_MgCl2/integrate')
@@ -169,7 +169,7 @@ for ifile, file in enumerate(sorted(glob.glob('test100fs*'))):
 
             x = np.dot(atpos, np.linalg.inv(R.T))   # normalize positions to lattice shape
             xS = x[np.where(atNames=='S')[0]]
-            # xF = x[np.where(atNames=='F')[0]]
+            # xPt = x[np.where(atNames=='Pt')[0]]
             # xO = x[np.where(atNames=='O')[0]]
             # xNa = x[np.where(atNames==3)[0]]
             def getRDF(x1, x2):
@@ -180,6 +180,7 @@ for ifile, file in enumerate(sorted(glob.glob('test100fs*'))):
                 # norm -1 takes -> min(sum(abs(x), axis=0))
                 return np.histogram(r, rBins)[0] * (np.linalg.det(R) / (binVol * len(x1) * len(x2))) # local / bulk density
             rdf[:,0] += getRDF(xS, xS)
+            rdf[:,0] += getRDF(xS, xPt)
             # rdf[:,1] += getRDF(xF, xF)
             # rdf[:,2] += getRDF(xO, xO)
             # rdf[:,2] += getRDF(xMg, xCl)
@@ -188,7 +189,7 @@ for ifile, file in enumerate(sorted(glob.glob('test100fs*'))):
             if saveRDF and saveIntermedRDFs:
                 rdfFile = outFile+".rdf.dat"+str(saveNum)
                 rdf *= (1./resetRDFnSteps)
-                np.savetxt(rdfFile, np.hstack((rMid[:,None], rdf)), header='r gSS', comments='') #  gFF gOO
+                np.savetxt(rdfFile, np.hstack((rMid[:,None], rdf)), header='r gSS gSPt', comments='') #  gFF gOO
                 rdfInited = False # reset rdf
                 saveRDF = False # reset save flag
 
@@ -198,7 +199,7 @@ for ifile, file in enumerate(sorted(glob.glob('test100fs*'))):
     if not saveIntermedRDFs:
         rdfFile = outFile+".rdf.datAll"
         rdf *= (1./nSteps)
-        np.savetxt(rdfFile, np.hstack((rMid[:,None], rdf)), header='r gSS', comments='') #  gFF gOO
+        np.savetxt(rdfFile, np.hstack((rMid[:,None], rdf)), header='r gSS gSPt', comments='') #  gFF gOO
         # rdfInited = False # reset rdf
         # saveRDF = False # reset save flag        
 

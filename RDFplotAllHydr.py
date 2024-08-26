@@ -8,20 +8,95 @@ import glob
 from scipy.ndimage import gaussian_filter1d
 import pandas as pd
 
+for atPairs in ['SS','OO']:
+# for atPairs in ['SS']:
+
 # atPairs = 'OO' 
 # atPairs = 'SS' 
-atPairs = sys.argv[1]
-hydrLevel = sys.argv[2]
+# atPairs = sys.argv[1]
+# hydrLevel = sys.argv[2]
 
+    # fnames = sorted(glob.glob(f'*SS*RDF.csv'))
+    plotFile = atPairs+"RDFallHydr.pdf"
+    hydrLevels = [9, 12, 15]
+    allHydrData = []
+
+    plt.figure(figsize=(4,3))
+
+    for hydrLevel in hydrLevels:
+        fname = f'hydr_{str(hydrLevel)}_{atPairs}_avg_RDF.csv'
+        print(fname)
+
+        df = pd.read_csv(fname)
+        # allHydrData.append(df.copy())
+        
+        g = gaussian_filter1d(df['g'],3) 
+        # g = df['g']
+        plt.plot(df['r'], g, label=f'$\lambda$={str(hydrLevel)}')
+        
+    # plt.plot(rMid, rdf)
+    plt.xlim(0, 20)
+    # plt.ylim(0, 20)
+    plt.xlabel('r [A]')
+    plt.ylabel('g(r)')
+    # plt.legend(['MgNa', 'NaCl', 'MgCl', 'ClCl'])
+    # plt.legend(['0-40ps', '40-80ps'])
+    # plt.legend(['0000', '0001'])
+    # plt.legend(labels)
+    plt.legend()
+    plt.savefig(plotFile, bbox_inches='tight')
+    plt.close()
+
+# sys.exit(1)
+
+atPairs = 'OO' 
+# atPairs = 'SS' 
+# atPairs = sys.argv[1]
+# hydrLevel = sys.argv[2]
+
+# fnames = sorted(glob.glob(f'*SS*RDF.csv'))
+plotFile = atPairs+"StructureAllHydr.pdf"
+hydrLevels = [9, 12, 15]
+allHydrData = []
+
+plt.figure(figsize=(4,3))
+
+for hydrLevel in hydrLevels:
+    
+    fname = f'hydr_{str(hydrLevel)}_OO_avg_StructureFactor.csv'
+    print(fname)
+    df = pd.read_csv(fname)
+    # allHydrData.append(df.copy())
+    
+    # Intensity = gaussian_filter1d(df['Intensity'],3) 
+    Intensity = df['Intensity']
+    plt.plot(df['q'], Intensity, label=f'$\lambda$={str(hydrLevel)}')
+    
+# plt.plot(rMid, rdf)
+plt.xlim(0, 4)
+plt.ylim(0, 2000)
+plt.xlabel('q($\\AA^{-1}$)')
+plt.ylabel('Intensity')
+# plt.legend(['MgNa', 'NaCl', 'MgCl', 'ClCl'])
+# plt.legend(['0-40ps', '40-80ps'])
+# plt.legend(['0000', '0001'])
+# plt.legend(labels)
+plt.legend()
+plt.savefig(plotFile, bbox_inches='tight')
+plt.close()
+
+
+# sys.exit(1)
+'''
 allData = [] # compile each data
 lenData = []
 
 plotFile = atPairs+"avgAllRDF.pdf"
 plt.figure(figsize=(4,3))
 # for ifile, file in enumerate(sorted(glob.glob('*7.rdf.dat*'))):
-for ifile, file in enumerate(sorted(glob.glob(f'{atPairs}_*.rdf.dat*'))):
-    data=np.genfromtxt(file, usecols=(0,1,2,3), names=True)
-    labels = data.dtype.names[1:]
+# for ifile, file in enumerate(sorted(glob.glob(f'{atPairs}_*.rdf.dat*'))):
+#     data=np.genfromtxt(file, usecols=(0,1,2,3), names=True)
+#     labels = data.dtype.names[1:]
     
     allData.append(data['g'+atPairs])
     lenData.append(len(data['g'+atPairs]))
@@ -62,6 +137,8 @@ plt.legend([atPairs])
 plt.savefig(plotFile, bbox_inches='tight')
 plt.close()
 
+
+
 # save data:
 df = pd.DataFrame({'r':allXeven,'g':allYmean})
 df.to_csv(f'hydr_{hydrLevel}_{atPairs}_avg_RDF.csv')
@@ -81,7 +158,7 @@ rho = g_r[-1]
 k = np.linspace(0.01, max(r), 1000)  # Example k values
 S_k = np.zeros_like(k)
 for i, k_val in enumerate(k):
-    integrand = r**2 * (g_r - 1) * np.sin(k_val * r) / (k_val * r)
+    integrand = r * (g_r - 1) * np.sin(k_val * r) / (k_val * r)
     S_k[i] = 1 + 4 * np.pi * rho * np.trapz(integrand, r)
 
 # # Method 2
@@ -90,7 +167,7 @@ for i, k_val in enumerate(k):
 # S_k = 1 + rho * np.fft.fft(g_r * r**2) * (r[1] - r[0])
 
 # # Normalize
-# S_k = np.real(S_k) / len(r)
+S_k = np.real(S_k) / len(r)
 
 plt.plot(k, S_k)
 plt.xlim(0., 1.)
@@ -103,3 +180,4 @@ plt.close()
 # save data:
 df = pd.DataFrame({'q':k,'Intensity':S_k})
 df.to_csv(f'hydr_{hydrLevel}_{atPairs}_avg_StructureFactor.csv')
+'''
