@@ -88,7 +88,7 @@ for atID in IDlist:
 
 AtNumTotal = len(atIDtoKeep)    
 
-xyzOut = 'test.xyz'
+xyzOut = 'output.xyz'
 with open(xyzOut, 'w') as f:
     f.write(f'{AtNumTotal} \n')
 
