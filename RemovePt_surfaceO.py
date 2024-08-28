@@ -65,7 +65,7 @@ lammpsDict = lammpsData.as_dict()
 
 # on 1 basis they are 7,8
 
-indexPtO_Bonds = list(np.where(np.array(lammpsDict['topology']['Bonds'])[:,0]==8))[0]
+indexPtO_Bonds = (np.where(np.array(lammpsDict['topology']['Bonds'])[:,0]==8))[0]
 
 atIDbonded1 = np.array(lammpsDict['topology']['Bonds'])[indexPtO_Bonds,1]
 atIDbonded2 = np.array(lammpsDict['topology']['Bonds'])[indexPtO_Bonds,2]
@@ -80,9 +80,11 @@ bounds = np.array(lammpsDict['box']['bounds'])
 atIDtoKeep = []
 for atID in IDlist:
     # print(atID)
-    if atID not in indexPtO_Bonds:
+    if atID not in atIDbondedAll:
         # compile list of non Pt O bonded atoms and positions
         atIDtoKeep.append(atID)
+    # else: 
+    #     print(atID)
 
 AtNumTotal = len(atIDtoKeep)    
 
