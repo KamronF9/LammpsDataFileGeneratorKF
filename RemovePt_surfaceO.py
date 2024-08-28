@@ -16,6 +16,7 @@ import pandas as pd
 Input data file with classical bonds and output vasp file w/o Pt and surface O
 '''
 
+unique_atom_names = ['C', 'F', 'H', 'O', 'Pt', 'S']
 
 # >>> data.
 # data.ATOMS_HEADERS      data.LammpsBox(         data.Molecule(          data.Structure(         data.clean_lines(       data.pd                 
@@ -64,15 +65,17 @@ lammpsDict = lammpsData.as_dict()
 
 # on 1 basis they are 7,8
 
-indexPtO_Bonds = np.where(np.array(lammpsDict['topology']['Bonds'])[:,0]==8)
+indexPtO_Bonds = list(np.where(np.array(lammpsDict['topology']['Bonds'])[:,0]==8))[0]
 
 atIDbonded1 = np.array(lammpsDict['topology']['Bonds'])[indexPtO_Bonds,1]
 atIDbonded2 = np.array(lammpsDict['topology']['Bonds'])[indexPtO_Bonds,2]
 atIDbondedAll = np.concatenate((atIDbonded1,atIDbonded2))
 
-lammpsDict['atoms']['type'] # atom type of 5 is Pt
+atom_types = lammpsDict['atoms']['type'] # atom type of 5 is Pt
 lammpsDF = pd.DataFrame(lammpsDict['atoms'])
 IDlist = lammpsDF.index
+
+bounds = np.array(lammpsDict['box']['bounds'])
 
 atIDtoKeep = []
 for atID in IDlist:
@@ -80,7 +83,31 @@ for atID in IDlist:
     if atID not in indexPtO_Bonds:
         # compile list of non Pt O bonded atoms and positions
         atIDtoKeep.append(atID)
-        
+
+AtNumTotal = len(atIDtoKeep)    
+
+xyzOut = 'test.xyz'
+with open(xyzOut, 'w') as f:
+    f.write(f'{AtNumTotal} \n')
+
+    R = np.array([[bounds[0,1]-bounds[0,0], 0. , 0.], 
+        [0., bounds[1,1]-bounds[1,0] , 0.], 
+        [0., 0., bounds[2,1]-bounds[2,0] ]])
+    
+    lattice = ' '.join(['{:.3f}'.format(x) for x in R.flatten()])
+
+    f.write(f'Lattice="{lattice}" ')
+    f.write(f"Properties=species:S:1:pos:R:3 \n") 
+
+    for atID in atIDtoKeep:
+        atpos = [ lammpsDict['atoms']['x'][atID], lammpsDict['atoms']['y'][atID], lammpsDict['atoms']['z'][atID] ]
+        # forces = ' '.join(['{:10.6f}'.format(x) for x in all_forces[frameNum][atIdx].flatten()])
+        coords = ' '.join(['{:15.6f}'.format(x) for x in atpos])
+        try:
+            f.write(f"{unique_atom_names[atom_types[atID]-1]} {coords} \n") # type is 1 base unique is 0 base
+        except:
+            print(atID)
+        # f.write(f'{coords} \n')
 
 # print(np.shape(atIDbondedAll)) #(8664,)
 
@@ -97,7 +124,7 @@ for atID in IDlist:
 
 # inFile = sys.argv[1] #lammps dump file
 # RFile = sys.argv[2] #lattice dump file
-
+'''
 for ifile, file in enumerate(sorted(glob.glob('test100fs*'))):
     inFile = file
     intervalNum = str(ifile) #inFile[-6] # interval int value 
@@ -296,3 +323,4 @@ for ifile, file in enumerate(sorted(glob.glob('test100fs*'))):
         # saveRDF = False # reset save flag        
 
     print('DONE')
+'''
