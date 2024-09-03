@@ -28,11 +28,14 @@ plt,ax1 = plt.subplots(figsize=(4,3))
 
 
 for hydrLevel in hydrLevels:
+    
     # fname = f'hydr_{str(hydrLevel)}_{atPairs}_avg_RDF.csv'
-    fname = f'densSulfurAll.txt'
+    # fnames = ['densAll.txt', 'densSulfurAll.txt']
+    
+    # for fname in fnames:
+    fname = f'densAll.txt'
     print(fname)
-
-    df = pd.read_csv(fname, skiprows=4, index_col=False,  names=['fraction','number','density'], delim_whitespace=True)
+    df = pd.read_csv(fname, skiprows=4, index_col=False,  names=['index', 'fraction','number','density'], delim_whitespace=True)
     #,sep='\s+')
     
     print(df)
@@ -42,11 +45,26 @@ for hydrLevel in hydrLevels:
     
     # g = gaussian_filter1d(df['g'],3) 
     # g = df['g']
-    # ax.plot(df['r'], g, label=f'$\lambda$={str(hydrLevel)}')
+    color = 'tab:red'
+    ax1.set_xlabel('Z fractional position')
+    ax1.set_ylabel('Total Mass Density ($g/cm^3$)', color=color)
+    ax1.plot(df['fraction'], df['density'], color=color, label=f'All')
+    ax1.set_ylim(0.05, 100)
+    ax1.set_yscale('log')
     
-    # ax2 = ax1.twinx() 
-    # ax2.
+
     
+    fname = f'densSulfurAll.txt'
+    print(fname)
+    color = 'tab:blue'
+    
+    df = pd.read_csv(fname, skiprows=4, index_col=False,  names=['index', 'fraction','number','density'], delim_whitespace=True)
+    ax2 = ax1.twinx() 
+    ax2.set_ylabel('Sulfur Mass Density ($g/cm^3$)', color=color)
+    ax2.plot(df['fraction'], df['density'], color=color, label=f'Sulfur')
+    ax2.set_ylim(0.05, 1)
+    ax2.set_yscale('log')
+
 # plt.plot(rMid, rdf)
 # plt.xlim(0, 15)
 # plt.ylim(0, 20)
@@ -56,12 +74,12 @@ for hydrLevel in hydrLevels:
 # plt.legend(['0-40ps', '40-80ps'])
 # plt.legend(['0000', '0001'])
 # plt.legend(labels)
-plt.legend()
+# plt.legend()
 plt.savefig(plotFile, bbox_inches='tight')
 plt.close()
 
-sys.exit(1)
-
+# sys.exit(1)
+'''
 atPairs = 'OO' 
 # atPairs = 'SS' 
 # atPairs = sys.argv[1]
@@ -100,7 +118,7 @@ plt.close()
 
 
 # sys.exit(1)
-'''
+
 allData = [] # compile each data
 lenData = []
 
