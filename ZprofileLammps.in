@@ -35,9 +35,9 @@ compute	  profS	  sulfur chunk/atom bin/1d z lower 0.01 units reduced
 # uses input from timesteps every ${freq}, does num averages, outputs at the end
 # 300000 max for one just list larger and it does all
 #fix		prof_ave all ave/chunk ${freq} ${num} ${end}  prof density/mass file dens.txt
-fix		prof_ave1 all ave/chunk ${freq} 1 100000000 prof density/mass file dens.txt
-fix		prof_ave2 sulfur ave/chunk ${freq} 1 100000000 prof density/mass file densSulfur.txt
+fix		prof_ave1 all ave/chunk ${freq} 1 100000000 prof density/mass file densAll.txt
+fix		prof_ave2 sulfur ave/chunk ${freq} 1 100000000 prof density/mass file densSulfurAll.txt
 
-rerun		test100fsInt01.dump test100fsInt02.dump test100fsInt03.dump test100fsInt04.dump test100fsInt05.dump test100fsInt06.dump test100fsInt07.dump test100fsInt08.dump test100fsInt09.dump test100fsInt10.dump dump x y z
+rerun		../test100fsInt01.dump ../test100fsInt02.dump ../test100fsInt03.dump ../test100fsInt04.dump ../test100fsInt05.dump ../test100fsInt06.dump ../test100fsInt07.dump ../test100fsInt08.dump ../test100fsInt09.dump ../test100fsInt10.dump dump x y z
 #rerun		test100fsInt10.dump dump x y z
 #rerun		test100fsInt01.dump first ${start} every ${freq} dump x y z
