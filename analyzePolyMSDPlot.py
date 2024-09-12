@@ -25,14 +25,14 @@ if curveFitPlot:
     interval = 0.1 # ps
     lastIndex = int(endTime/interval)
     
-    n_order = 3
+    n_order = 3 #5 #3
     x_train = df['dt'][:lastIndex]
     y_train = df['msd_c'][:lastIndex]
     x_test = np.linspace(0.0, endTime, lastIndex)
     
     X_train = np.vander(x_train, n_order + 1, increasing=True)
     X_test = np.vander(x_test, n_order + 1, increasing=True)
-    reg = BayesianRidge(tol=1e-6, fit_intercept=False, compute_score=True)
+    reg = BayesianRidge(tol=1e-6, fit_intercept=False, compute_score=True, max_iter=1000)
     # reg = BayesianRidge(tol=1e-6, compute_score=True)
 
 
