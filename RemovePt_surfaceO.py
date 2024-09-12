@@ -65,7 +65,9 @@ lammpsDict = lammpsData.as_dict()
 
 # on 1 basis they are 7,8
 
-indexPtO_Bonds = (np.where(np.array(lammpsDict['topology']['Bonds'])[:,0]==8))[0]
+indexPtO_Bonds = (np.where(np.array(lammpsDict['topology']['Bonds'])[:,0]==7))[0] # O-O
+# indexPtO_Bonds = (np.where(np.array(lammpsDict['topology']['Bonds'])[:,0]==8))[0] # Pt-o
+
 
 atIDbonded1 = np.array(lammpsDict['topology']['Bonds'])[indexPtO_Bonds,1]
 atIDbonded2 = np.array(lammpsDict['topology']['Bonds'])[indexPtO_Bonds,2]
