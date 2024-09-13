@@ -47,9 +47,11 @@ if kernelResample:
     
     prop_cycle = plt.rcParams['axes.prop_cycle']
     colors = prop_cycle.by_key()['color']
-    labels = ['Pt/O Surface','Bulk','Pt Surface','Pt Avg']
+    labels = ['Pt/O Surface','Bulk','Pt Surface','Pt Surfaces']
+    
 
-    for i in range(4):
+    # for i in range(4):
+    for i in [1,3]:
 
         df = allMSDs[i]
 
