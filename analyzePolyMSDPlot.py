@@ -33,6 +33,7 @@ if kernelResample:
     x_train = np.array(df['dt'][:lastIndex])[::100] # limit to 1ns and then downsample by 100
     y_train = np.array(df['msd_c'][:lastIndex])[::100]
     x_test = np.linspace(0.0, endTime, 100)
+    plt.scatter(x_train, y_train, marker='+', zorder=10, color='k')
 
     # method from TI paper - credit Sundaraman/Shah
     #Tune model hyperparameters on entire data:
