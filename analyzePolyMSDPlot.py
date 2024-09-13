@@ -9,13 +9,74 @@ from sklearn.linear_model import BayesianRidge
 import numpy as np
 
 basicPlot = False
-curveFitPlot = True
+curveFitPlot = False
+kernelResample = True
 
 allMSDs = []
 # for i in range(3):
 for i in [1]:
     df = pd.read_csv(f'{i}MSD.csv')
     allMSDs.append(df)
+
+if kernelResample:
+
+    from sklearn.kernel_ridge import KernelRidge
+    from sklearn.model_selection import GridSearchCV
+    from sklearn.preprocessing import StandardScaler
+    from sklearn.pipeline import make_pipeline
+    from sklearn.gaussian_process.kernels import RBF
+
+    endTime = 1000. # ps
+    interval = 0.1 # ps
+    lastIndex = int(endTime/interval)
+
+    x_train = np.array(df['dt'][:lastIndex])[::100] # limit to 1ns and then downsample by 100
+    y_train = np.array(df['msd_c'][:lastIndex])[::100]
+    x_test = np.linspace(0.0, endTime, 100)
+
+    # method from TI paper - credit Sundaraman/Shah
+    #Tune model hyperparameters on entire data:
+    np.random.seed(0)
+    features = x_train[:, None]
+    target = y_train
+    print('start search')
+    # param_grid = {"kernelridge__alpha": np.logspace(-10, 0, 11),
+    #                         "kernelridge__kernel": [RBF(l) for l in np.logspace(-3, 3, 10)]}
+    param_grid = {"kernelridge__alpha": np.logspace(-10, 0, 5),
+                            "kernelridge__kernel": [RBF(l) for l in np.logspace(-3, 3, 5)]}
+    grid = GridSearchCV(make_pipeline(StandardScaler(), KernelRidge()),
+                                            param_grid=param_grid, verbose=1)
+    
+    grid.fit(features, target)
+    model = grid.best_estimator_
+    print('Best parameters:', grid.best_params_)
+
+    #Run model on several sub-samplings of data:
+    nRuns = 10 # 1000
+    x_test = np.linspace(x_train.min(), x_train.max(), 100)
+    predictions = []
+    for iRun in range(nRuns):
+            print(iRun)
+            #Randomly resample data:
+            sel = np.sort(np.random.choice(len(x_train), size=len(x_train), replace=True))
+            featuresSel = x_train[sel, None]
+            targetSel = y_train[sel]
+            #Store predictions from subset model:
+            model.fit(featuresSel, targetSel)
+            predictions.append(model.predict(x_test[:, None]))
+    predictions = np.array(predictions)
+
+    #Plot statistics of predictions
+    predict_mean = predictions.mean(axis=0)
+    predict_err = predictions.std(axis=0)*1.96  # for 95% confidence interval
+    predict_lo = predict_mean - predict_err
+    predict_hi = predict_mean + predict_err
+    plt.fill_between(x_test, predict_lo, predict_hi, color=(1, 0.7, 0.7))
+    plt.plot(x_test, predict_mean, 'r')
+
+
+    plt.tight_layout()
+    plt.savefig('fitplotKernelResample.pdf')
 
 if curveFitPlot:
     
@@ -70,7 +131,7 @@ if curveFitPlot:
         ax.text(0.05, -1.0, text, fontsize=12)
 
     plt.tight_layout()
-    plt.savefig('fitplot.pdf')
+    plt.savefig('fitplotBaysRidge.pdf')
 
 if basicPlot:
 
