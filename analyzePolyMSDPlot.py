@@ -7,18 +7,23 @@ from scipy.ndimage import gaussian_filter1d
 # from scipy.optimize import curve_fit
 from sklearn.linear_model import BayesianRidge
 import numpy as np
+import sys
 
 basicPlot = False
 curveFitPlot = False
 kernelResample = True
+leastSq = True
 
 endTime = 1000. # ps
 interval = 0.1 # ps
 lastIndex = int(endTime/interval)
+lastIndexDiv2 = int(endTime/interval/2)
 
 
 allMSDs = []
-for i in range(3):
+
+# 0 all poly water, 1 bottom, 2 middle, 3 top
+for i in [1,2,3]:
 # for i in [1]:
     df = pd.read_csv(f'{i}MSD.csv')
     allMSDs.append(df)
@@ -30,6 +35,7 @@ df = pd.DataFrame({
     })
 
 allMSDs.append(df)
+
 
 if kernelResample:
 
@@ -55,10 +61,44 @@ if kernelResample:
 
         df = allMSDs[i]
 
+        if leastSq:
+            # test case w last df the avg of surfaces 
+            # only caculate on the second half of data
+            dt = np.array(df['dt'][lastIndexDiv2:lastIndex])[::100]
+            msd = np.array(df['msd_c'][lastIndexDiv2:lastIndex])[::100]
+            smoothed = False
+            # from analyzer pymatgen program
+            def weighted_lstsq(a, b):
+                if smoothed == "max":
+                    # For max smoothing, we need to weight by variance.
+                    w_root = (1 / dt) ** 0.5
+                    return np.linalg.lstsq(a * w_root[:, None], b * w_root, rcond=None)
+                return np.linalg.lstsq(a, b, rcond=None)
+
+            # Get self diffusivity
+            a = np.ones((len(dt), 2))
+            a[:, 0] = dt
+            print(a)
+            print(weighted_lstsq(a, msd))
+            (m, c), res, rank, s = weighted_lstsq(a, msd)
+            # m shouldn't be negative
+            m = max(m, 1e-15)
+
+            # factor of 10 is to convert from Å^2/fs to cm^2/s
+            # factor of 6 is for dimensionality
+            diffusivity = m / 60
+            print(f'i={i} Diffusivity={diffusivity} cm^2/s')
+            # sys.exit(1)
+
+
+
         x_train = np.array(df['dt'][:lastIndex])[::100] # limit to 1ns and then downsample by 100
         y_train = np.array(df['msd_c'][:lastIndex])[::100]
         x_test = np.linspace(0.0, endTime, 100)
-        # plt.scatter(x_train, y_train, marker='+', zorder=10, color='k') # show original data
+        # plot original data
+        plt.scatter(x_train, y_train, marker='+', zorder=10, color='k') # show original data
+        # plot lstsq
+        plt.plot(x_train[lastIndexDiv2:], m*x_train[lastIndexDiv2:lastIndex] + c, 'r', label='Fitted line')
 
         # method from TI paper - credit Sundaraman/Shah
         #Tune model hyperparameters on entire data:
@@ -66,23 +106,23 @@ if kernelResample:
         features = x_train[:, None]
         target = y_train
         print('start search')
-        # param_grid = {"kernelridge__alpha": np.logspace(-10, 0, 11),
-        #                         "kernelridge__kernel": [RBF(l) for l in np.logspace(-3, 3, 10)]}
-        param_grid = {"kernelridge__alpha": np.logspace(-10, 0, 5),
-                                "kernelridge__kernel": [RBF(l) for l in np.logspace(-3, 3, 5)]}
+        param_grid = {"kernelridge__alpha": np.logspace(-10, 0, 11),
+                                "kernelridge__kernel": [RBF(l) for l in np.logspace(-3, 3, 10)]}
+        # param_grid = {"kernelridge__alpha": np.logspace(-10, 0, 5),
+                                # "kernelridge__kernel": [RBF(l) for l in np.logspace(-3, 3, 5)]}
         grid = GridSearchCV(make_pipeline(StandardScaler(), KernelRidge()),
-                                                param_grid=param_grid, verbose=1)
+                                                param_grid=param_grid, verbose=1) 
         
         grid.fit(features, target)
         model = grid.best_estimator_
         print('Best parameters:', grid.best_params_)
 
         #Run model on several sub-samplings of data:
-        nRuns = 10 # 1000
+        nRuns = 100 # 1000
         x_test = np.linspace(x_train.min(), x_train.max(), 100)
         predictions = []
         for iRun in range(nRuns):
-                print(iRun)
+                # print(iRun)
                 #Randomly resample data:
                 sel = np.sort(np.random.choice(len(x_train), size=len(x_train), replace=True))
                 featuresSel = x_train[sel, None]
