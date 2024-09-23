@@ -169,7 +169,7 @@ for ifile, file in enumerate(sorted(glob.glob('test100fs*'))):
 
             x = np.dot(atpos, np.linalg.inv(R.T))   # normalize positions to lattice shape
             xS = x[np.where(atNames=='S')[0]]
-            xPt = x[np.where(atNames=='Pt')[0]]
+            # xPt = x[np.where(atNames=='Pt')[0]]
             # xO = x[np.where(atNames=='O')[0]]
             # xNa = x[np.where(atNames==3)[0]]
             def getRDF(x1, x2):
@@ -180,7 +180,7 @@ for ifile, file in enumerate(sorted(glob.glob('test100fs*'))):
                 # norm -1 takes -> min(sum(abs(x), axis=0))
                 return np.histogram(r, rBins)[0] * (np.linalg.det(R) / (binVol * len(x1) * len(x2))) # local / bulk density
             rdf[:,0] += getRDF(xS, xS)
-            rdf[:,1] += getRDF(xS, xPt)
+            # rdf[:,1] += getRDF(xS, xPt)
             # rdf[:,1] += getRDF(xF, xF)
             # rdf[:,2] += getRDF(xO, xO)
             # rdf[:,2] += getRDF(xMg, xCl)
@@ -201,9 +201,10 @@ for ifile, file in enumerate(sorted(glob.glob('test100fs*'))):
         rdf *= (1./nSteps)
 
         rdfFile = 'SS_RDF' + intervalNum + '.rdf.datAll'
-        np.savetxt(rdfFile, np.hstack((rMid[:,None], rdf)), header='r gSS gSPt', comments='') #  gFF gOO
-        rdfFile = 'SPt_RDF' + intervalNum + '.rdf.datAll'
-        np.savetxt(rdfFile, np.hstack((rMid[:,None], rdf)), header='r gSS gSPt', comments='') #  gFF gOO
+        np.savetxt(rdfFile, np.hstack((rMid[:,None], rdf)), header='r gSS', comments='') #  gFF gOO
+        # np.savetxt(rdfFile, np.hstack((rMid[:,None], rdf)), header='r gSS gSPt', comments='') #  gFF gOO
+        # rdfFile = 'SPt_RDF' + intervalNum + '.rdf.datAll'
+        # np.savetxt(rdfFile, np.hstack((rMid[:,None], rdf)), header='r gSS gSPt', comments='') #  gFF gOO
         # rdfInited = False # reset rdf
         # saveRDF = False # reset save flag        
 

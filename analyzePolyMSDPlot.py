@@ -15,18 +15,27 @@ kernelResample = True
 leastSq = True
 
 endTime = 1000. # ps
-interval = 0.1 # ps
+interval = 7.4 # smoothed # ps
+skipSamples = 1 # smoothed data has less points
+
+# interval = 0.1 #for non smoothed # ps
+# skipSamples = 100 # for the non smoothed data
 lastIndex = int(endTime/interval)
 lastIndexDiv2 = int(endTime/interval/2)
 
 
+fileName = 'fitDiffusionValues.txt'
+fileOut = open(fileName,'w')
+
 allMSDs = []
 
 # 0 all poly water, 1 bottom, 2 middle, 3 top
-for i in [1,2,3]:
+# for i in [1,2,3]:
+for i in [0,1,2]:
 # for i in [1]:
     df = pd.read_csv(f'{i}MSD.csv')
     allMSDs.append(df)
+    # print(df)
 
 # add avg of both pt surfaces
 df = pd.DataFrame({
@@ -57,6 +66,7 @@ if kernelResample:
     
 
     # for i in range(4):
+    # bulk, avg top/bottom
     for i in [1,3]:
 
         df = allMSDs[i]
@@ -64,8 +74,8 @@ if kernelResample:
         if leastSq:
             # test case w last df the avg of surfaces 
             # only caculate on the second half of data
-            dt = np.array(df['dt'][lastIndexDiv2:lastIndex])[::100]
-            msd = np.array(df['msd_c'][lastIndexDiv2:lastIndex])[::100]
+            dt = np.array(df['dt'][lastIndexDiv2:lastIndex])[::skipSamples]
+            msd = np.array(df['msd_c'][lastIndexDiv2:lastIndex])[::skipSamples]
             smoothed = False
             # from analyzer pymatgen program
             def weighted_lstsq(a, b):
@@ -78,33 +88,54 @@ if kernelResample:
             # Get self diffusivity
             a = np.ones((len(dt), 2))
             a[:, 0] = dt
-            print(a)
+            # print(a)
             print(weighted_lstsq(a, msd))
             (m, c), res, rank, s = weighted_lstsq(a, msd)
             # m shouldn't be negative
             m = max(m, 1e-15)
 
-            # factor of 10 is to convert from Å^2/fs to cm^2/s
+            # factor of 100 is to convert from Å^2/ps to m^2/s x 10^10
+            # XXfactor of 10 is to convert from Å^2/fs to cm^2/s
             # factor of 6 is for dimensionality
-            diffusivity = m / 60
-            print(f'i={i} Diffusivity={diffusivity} cm^2/s')
+            diffusivity = m / 6 * 100
+            print(f'i={i}',file=fileOut)
+            print(f'Diffusivity={diffusivity} m^2/s*10^10',file=fileOut)
+
+            # Calculate the error in the diffusivity using the error in the
+            # slope from the lst sq.
+            # Variance in slope = n * Sum Squared Residuals / (n * Sxx - Sx
+            # ** 2) / (n-2).
+            n = len(dt)
+
+            # Pre-compute the denominator since we will use it later.
+            # We divide dt by 1000 to avoid overflow errors in some systems (
+            # e.g., win). This is subsequently corrected where denom is used.
+            try:
+                denom = (n * np.sum((dt / 1000) ** 2) - np.sum(dt / 1000) ** 2) * (n - 2)
+                print(denom)
+                diffusivity_std_dev = np.sqrt(n * res[0] / denom) / 6 *100 / 1000
+                print(f'i={i} Diffusivity_std_dev={diffusivity_std_dev} m^2/s*10^10',file=fileOut)
+            except:
+                print('error in std dev diff')
             # sys.exit(1)
 
 
 
-        x_train = np.array(df['dt'][:lastIndex])[::100] # limit to 1ns and then downsample by 100
-        y_train = np.array(df['msd_c'][:lastIndex])[::100]
+        x_train = np.array(df['dt'][:lastIndex])[::skipSamples] # limit to 1ns and then downsample by 100
+        y_train = np.array(df['msd_c'][:lastIndex])[::skipSamples]
         x_test = np.linspace(0.0, endTime, 100)
         # plot original data
-        plt.scatter(x_train, y_train, marker='+', zorder=10, color='k') # show original data
+        # plt.scatter(x_train, y_train, marker='+', zorder=10, color='k') # show original data
         # plot lstsq
-        plt.plot(x_train[lastIndexDiv2:], m*x_train[lastIndexDiv2:lastIndex] + c, 'r', label='Fitted line')
+        # plt.plot(dt, m*dt + c, 'r', label='Fitted line',color=colors[i])
 
         # method from TI paper - credit Sundaraman/Shah
         #Tune model hyperparameters on entire data:
         
         features = x_train[:, None]
         target = y_train
+        # print(features)
+        # print(target)
         print('start search')
         param_grid = {"kernelridge__alpha": np.logspace(-10, 0, 11),
                                 "kernelridge__kernel": [RBF(l) for l in np.logspace(-3, 3, 10)]}
@@ -156,9 +187,9 @@ if curveFitPlot:
     
     # based on :
     # https://scikit-learn.org/stable/auto_examples/linear_model/plot_bayesian_ridge_curvefit.html
-    endTime = 1000. # ps
-    interval = 0.1 # ps
-    lastIndex = int(endTime/interval)
+    # endTime = 1000. # ps
+    # interval = 0.1 # ps
+    # lastIndex = int(endTime/interval)
     
     n_order = 3 #5 #3
     x_train = df['dt'][:lastIndex]

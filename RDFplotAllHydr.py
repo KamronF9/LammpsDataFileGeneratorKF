@@ -8,8 +8,8 @@ import glob
 from scipy.ndimage import gaussian_filter1d
 import pandas as pd
 
-for atPairs in ['SPt','SS','OO']:
-# for atPairs in ['SS']:
+# for atPairs in ['SPt','SS','OO']:
+for atPairs in ['SS']:
 
 # atPairs = 'OO' 
 # atPairs = 'SS' 
@@ -18,7 +18,7 @@ for atPairs in ['SPt','SS','OO']:
 
     # fnames = sorted(glob.glob(f'*SS*RDF.csv'))
     plotFile = atPairs+"RDFallHydr.pdf"
-    hydrLevels = [9, 12, 15]
+    hydrLevels = [9, 12, 15, '12OFF']
     allHydrData = []
 
     plt.figure(figsize=(4,3))
@@ -47,7 +47,7 @@ for atPairs in ['SPt','SS','OO']:
     plt.savefig(plotFile, bbox_inches='tight')
     plt.close()
 
-# sys.exit(1)
+sys.exit(1)
 
 atPairs = 'OO' 
 # atPairs = 'SS' 
