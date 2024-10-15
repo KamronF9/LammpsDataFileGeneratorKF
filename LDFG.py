@@ -464,8 +464,11 @@ def generate_DATA_FILE():
     molecule_number = 1
     sites = structure.sites
     for each in atom_sites:
+        # print(each.type)
         type_of_atom = atom_type_NUMBER(each.type)
         coords = sites[i - 1].coords
+        # print(katg)
+        # print(type_of_atom)
         katg_each = katg[type_of_atom]
         print(str(i) +
               " " +
