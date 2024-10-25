@@ -465,10 +465,10 @@ def generate_DATA_FILE():
     sites = structure.sites
     for each in atom_sites:
         # print(each.type)
+        # print(katg)
         type_of_atom = atom_type_NUMBER(each.type)
         coords = sites[i - 1].coords
-        # print(katg)
-        # print(type_of_atom)
+        # # print(type_of_atom)
         katg_each = katg[type_of_atom]
         print(str(i) +
               " " +
@@ -540,6 +540,7 @@ def generate_DATA_FILE():
         torsions, i = known_torsion_types(), 1
         for each in torsions:
             # dihedral K d n
+            # hard coding n=3 *****
             print(str(i) + " " + str(each[4]/2/kcalPermolToeV) + " " +
                 str(each[6]) + " 3", file=f) 
             i += 1

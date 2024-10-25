@@ -33,7 +33,8 @@ lattice_parameters:
 # R0=2^1/6*sigma
 # although the paper values for R may really be sigma!
 # D0=4*epsilon or maybe not?
-# To identify different types of the same atom use C C1+ C2+ ....
+# To identify different types of the same atom use 
+# C C+ (C1+ in VASP OK but C+ needed here) C2+ C3+ ....
 types:
 # Ag:
 #  CHARGES: 0.0
@@ -46,14 +47,6 @@ types:
 # C1
  C:
   CHARGES: 0.5
-  LJ_PARAMETERS:
-   0: 3.88
-   1: .0844
-  MASS: 12.01
-  REQUIRED_CONNECTORS:
-   0: None 
- C2+:
-  CHARGES: 0.9
   LJ_PARAMETERS:
    0: 3.88
    1: .0844
@@ -100,7 +93,178 @@ types:
   MASS: 32.06
   REQUIRED_CONNECTORS: 
    0: None
+ C+:
+  CHARGES: 0.84
+  LJ_PARAMETERS:
+   0: 3.88
+   1: .0844
+  MASS: 12.01
+  REQUIRED_CONNECTORS:
+   0: None 
+ C2+:
+  CHARGES: 0.54
+  LJ_PARAMETERS:
+   0: 3.88
+   1: .0844
+  MASS: 12.01
+  REQUIRED_CONNECTORS:
+   0: None 
+ C3+:
+  CHARGES: 0.5
+  LJ_PARAMETERS:
+   0: 3.88
+   1: .0844
+  MASS: 12.01
+  REQUIRED_CONNECTORS:
+   0: None 
+ C4+:
+  CHARGES: 0.46
+  LJ_PARAMETERS:
+   0: 3.88
+   1: .0844
+  MASS: 12.01
+  REQUIRED_CONNECTORS:
+   0: None 
+ C5+:
+  CHARGES: 0.41
+  LJ_PARAMETERS:
+   0: 3.88
+   1: .0844
+  MASS: 12.01
+  REQUIRED_CONNECTORS:
+   0: None 
+ C6+:
+  CHARGES: 0.31
+  LJ_PARAMETERS:
+   0: 3.88
+   1: .0844
+  MASS: 12.01
+  REQUIRED_CONNECTORS:
+   0: None 
 
+ F+:
+  CHARGES: -0.28
+  LJ_PARAMETERS:
+   0: 3.40
+   1: .050
+  MASS: 19.0
+  REQUIRED_CONNECTORS: 
+   0: None
+ F2+:
+  CHARGES: -0.27
+  LJ_PARAMETERS:
+   0: 3.40
+   1: .050
+  MASS: 19.0
+  REQUIRED_CONNECTORS: 
+   0: None
+ F3+:
+  CHARGES: -0.25
+  LJ_PARAMETERS:
+   0: 3.40
+   1: .050
+  MASS: 19.0
+  REQUIRED_CONNECTORS: 
+   0: None
+ F4+:
+  CHARGES: -0.22
+  LJ_PARAMETERS:
+   0: 3.40
+   1: .050
+  MASS: 19.0
+  REQUIRED_CONNECTORS: 
+   0: None
+ F5+:
+  CHARGES: -0.24
+  LJ_PARAMETERS:
+   0: 3.40
+   1: .050
+  MASS: 19.0
+  REQUIRED_CONNECTORS: 
+   0: None
+ F6+:
+  CHARGES: -0.31
+  LJ_PARAMETERS:
+   0: 3.40
+   1: .050
+  MASS: 19.0
+  REQUIRED_CONNECTORS: 
+   0: None
+
+ H2+:
+  CHARGES: 0.41
+  LJ_PARAMETERS:
+   0: .9
+   1: .01
+  MASS: 1.01
+  REQUIRED_CONNECTORS: 
+   0: None
+ H3+:
+  CHARGES: 0.4606
+  LJ_PARAMETERS:
+   0: .9
+   1: .01
+  MASS: 1.01
+  REQUIRED_CONNECTORS: 
+   0: None
+
+ O+:
+  CHARGES: -0.61
+  LJ_PARAMETERS:
+   0: 3.4
+   1: .096
+  MASS: 16.0
+  REQUIRED_CONNECTORS: 
+   0: None
+ O2+:
+  CHARGES: -0.82
+  LJ_PARAMETERS:
+   0: 3.4
+   1: .096
+  MASS: 16.0
+  REQUIRED_CONNECTORS: 
+   0: None
+ O3+:
+  CHARGES: -0.3818
+  LJ_PARAMETERS:
+   0: 3.4
+   1: .096
+  MASS: 16.0
+  REQUIRED_CONNECTORS: 
+   0: None
+ O4+:
+  CHARGES: -0.54
+  LJ_PARAMETERS:
+   0: 3.4
+   1: .096
+  MASS: 16.0
+  REQUIRED_CONNECTORS: 
+   0: None
+ O5+:
+  CHARGES: -0.5
+  LJ_PARAMETERS:
+   0: 3.4
+   1: .096
+  MASS: 16.0
+  REQUIRED_CONNECTORS: 
+   0: None
+
+ Pt:
+  CHARGES: 0.0
+  LJ_PARAMETERS:
+   0: 2.72
+   1: 72.4
+  MASS: 195.1
+  REQUIRED_CONNECTORS: 
+   0: None
+ S+:
+  CHARGES: 1.08
+  LJ_PARAMETERS:
+   0: 4.03
+   1: .344
+  MASS: 32.06
+  REQUIRED_CONNECTORS: 
+   0: None
 
 
 #BONDS (STRETCHING), ENERGY [kcal/mol/A^2], LENGTH [A]
