@@ -769,7 +769,7 @@ import glob
 
 structures = []
 # fnames = sorted(glob.glob('*.dump'))[:1] # # just use first 0,1 [:2]
-fnames = sorted(glob.glob('*.dump'))  # use all 
+fnames = sorted(glob.glob('../cleandumps/*.dump'))  # use all 
 print(fnames)
 
 for filename in fnames:
@@ -818,7 +818,7 @@ for filename in fnames:
         # atomic_symbols = frame.data.element
         type_dict={1:'C',2:'F',3:'H',4:'O',5:'Pt',6:'S'}
         # print('frame.data.type', frame.data.type)
-        # account for if an atom disappears
+        # account for if an atom dissappears
         atomic_symbols = [type_dict[i] for i in frame.data.type]
         lattice=frame.box.to_lattice()
         
@@ -854,11 +854,16 @@ rangeBetween = fractRangeTop - fractRangeBottom
 fractTwoThirds = 2./3. * rangeBetween + fractRangeBottom
 fractOneThirds = 1./3. * rangeBetween + fractRangeBottom
 
-# cs = np.array([[30.,90.]])/cmax
-# cs = np.array([[8.,30.],[30.,90.],[90.,112.]])/cmax
-# cs = np.array([[10.,35.],[35.,65.],[65.,90.]])/cmax # for 21 nafion structure
-cs = np.array([[fractRangeBottom,fractRangeTop],[fractRangeBottom,fractOneThirds],[fractOneThirds,fractTwoThirds],[fractTwoThirds,fractRangeTop]]) # for 14 nafions or any variant in scale
-# cs = np.array([[fractRangeBottom,fractRangeTop]]) # test full range
+# Run both Pt poly water slices and bulk mode diffusions
+# Pt poly water:
+# 0 - full poly water range
+# 1 - bottom poly water surface
+# 2 - middle
+# 3 - upper surface
+# Bulk only:
+# 4 - complete full region
+cs = np.array([[fractRangeBottom,fractRangeTop],[fractRangeBottom,fractOneThirds],[fractOneThirds,fractTwoThirds],[fractTwoThirds,fractRangeTop], [0.0, 1.0]]) # for 14 nafions or any variant in scale
+
 cs = cs.tolist()
 
 # sys.exit(1)
@@ -877,7 +882,7 @@ with open('diffResults.txt', 'w') as fout:
             # ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 1,100,initial_disp=None,initial_structure=structures[0],c_ranges=[(25.,75.)])
             # ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 1,100,initial_disp=None,initial_structure=structures[0],c_ranges=[(0.,25.),(25.,75.)])
             # ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 1,100,initial_disp=None,initial_structure=structures[0],c_ranges=[(0.,.25)])
-            ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 100,1,initial_disp=None,initial_structure=structures[0],c_ranges=[c], smoothed=False) # ,smoothed=False
+            ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 100,1,initial_disp=None,initial_structure=structures[0],c_ranges=[c], smoothed=True) # ,smoothed=False
             # ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 5,10,initial_disp=None,initial_structure=structures[0],c_ranges=[c]) 
             print('diffusivity_c_range_components ',ob.diffusivity_c_range_components)
             print('std ',ob.diffusivity_c_range_components_std_dev)

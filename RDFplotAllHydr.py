@@ -18,7 +18,8 @@ for atPairs in ['SS']:
 
     # fnames = sorted(glob.glob(f'*SS*RDF.csv'))
     plotFile = atPairs+"RDFallHydr.pdf"
-    hydrLevels = [9, 12, 15, '12OFF']
+    # hydrLevels = [9, 12, '12OFF', '6JINN', '12JINN'] # 15
+    hydrLevels = [12, '12OFF', '12JINNscale'] # 15
     allHydrData = []
 
     plt.figure(figsize=(4,3))
@@ -30,8 +31,8 @@ for atPairs in ['SS']:
         df = pd.read_csv(fname)
         # allHydrData.append(df.copy())
         
-        g = gaussian_filter1d(df['g'],3) 
-        # g = df['g']
+        # g = gaussian_filter1d(df['g'],3) 
+        g = df['g']
         plt.plot(df['r'], g, label=f'$\lambda$={str(hydrLevel)}')
         
     # plt.plot(rMid, rdf)

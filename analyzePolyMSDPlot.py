@@ -14,36 +14,50 @@ curveFitPlot = False
 kernelResample = True
 leastSq = True
 
-endTime = 1000. # ps
-interval = 7.4 # smoothed # ps
-skipSamples = 1 # smoothed data has less points
+bulkOnly = False # bulk only simulation
 
-# interval = 0.1 #for non smoothed # ps
-# skipSamples = 100 # for the non smoothed data
-lastIndex = int(endTime/interval)
-lastIndexDiv2 = int(endTime/interval/2)
 
+# CSV naming:
+# Pt poly water:
+# 0 - full poly water range
+# 1 - bottom poly water surface
+# 2 - middle
+# 3 - upper surface
+# Bulk only:
+# 4 - complete full region
+
+if bulkOnly:
+    files_to_analyze = [4]
+else:
+    files_to_analyze = [1,2,3]
 
 fileName = 'fitDiffusionValues.txt'
 fileOut = open(fileName,'w')
 
 allMSDs = []
 
-# 0 all poly water, 1 bottom, 2 middle, 3 top
-# for i in [1,2,3]:
-for i in [0,1,2]:
-# for i in [1]:
+for i in files_to_analyze:
     df = pd.read_csv(f'{i}MSD.csv')
     allMSDs.append(df)
     # print(df)
 
-# add avg of both pt surfaces
-df = pd.DataFrame({
-    'dt': allMSDs[0]['dt'][:lastIndex],
-    'msd_c': np.mean([allMSDs[0]['msd_c'][:lastIndex],allMSDs[2]['msd_c'][:lastIndex]],axis=0)
-    })
+totalPts = len(df) # take last df for ex
+endTime = df['dt'][totalPts-1] * 0.75 # ps - cut off last 1/4 of data
+interval = df['dt'][1] - df['dt'][0] # 7.4 was # smoothed # ps
+skipSamples = 1 # smoothed data has less points
 
-allMSDs.append(df)
+# interval = 0.1 #for non smoothed # ps
+# skipSamples = 100 # for the non smoothed data
+lastIndex = int(endTime/interval) # used for plotting
+lastIndexDiv2 = int(endTime/interval/2) # used for fitting slope to last half
+
+# add avg of both pt surfaces
+if not bulkOnly:
+    df = pd.DataFrame({
+        'dt': allMSDs[0]['dt'][:lastIndex],
+        'msd_c': np.mean([allMSDs[0]['msd_c'][:lastIndex],allMSDs[2]['msd_c'][:lastIndex]],axis=0)
+        })
+    allMSDs.append(df)
 
 
 if kernelResample:
@@ -62,12 +76,19 @@ if kernelResample:
     
     prop_cycle = plt.rcParams['axes.prop_cycle']
     colors = prop_cycle.by_key()['color']
-    labels = ['Pt/O Surface','Bulk','Pt Surface','Pt Surfaces']
     
-
-    # for i in range(4):
-    # bulk, avg top/bottom
-    for i in [1,3]:
+    # if sim w Pt-  allMSDs indicies: 0 bottom, 1 bulk, 2 top, 3 surface avg
+    
+    if bulkOnly:
+        # only one - total region
+        dataToProcess = [0]
+        labels = ['Bulk']
+    else:
+         # bulk, avg top/bottom
+        dataToProcess = [1,3]
+        labels = ['Pt/O Surface','Bulk','Pt Surface','Pt Surfaces']
+        
+    for i in dataToProcess:
 
         df = allMSDs[i]
 
