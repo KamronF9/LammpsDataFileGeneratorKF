@@ -1,0 +1,438 @@
+#-------------------------------------------------------------------
+#     Configuration file for LDFM
+#      11 - 20 - 2015
+#   Charles Pueschel
+# Note: If there are repeats, the last value will be taken.
+# Order doesn't matter, comments do not matter. Delete as much as 
+# you desire.
+#-------------------------------------------------------------------
+
+#Importing Structure Files & File Type
+filename: 'pt+2so3-cn-frz_vac_500_0deg-out1.vasp'
+structure_type: 'vasp'
+
+#General Settings
+#angle/torsion and lattice angles not used
+
+# excludeFromBonds: [121, 122, 79]
+excludeFromBonds: []
+# onlyFindBonds: True
+
+bond_length_tolerance_factor: 0.2 #0.5 # 0.015 #fractional
+angle_tolerance_factor: 30 #Degrees
+torsion_tolerance_factor: 30 #Degrees
+
+lattice_parameters:
+ vectors: {i:[0, 0, 0], j:[0, 0, 0], k:[0, 0, 0]}
+ angles: {alpha: 90. ,beta: 90.0 ,gamma: 60.0} 
+
+
+#ATOM TYPES, CHARGES [e], LJ PARAMETERS [R0 A, D0 kcal/mol], MASS [g/mol], CONNECTORS
+#   in lammps order is eps then sigma
+# ** note conversion from D0 to epsilon and R0 to sigma in script
+# R0=2^1/6*sigma
+# although the paper values for R may really be sigma!
+# D0=4*epsilon or maybe not?
+# To identify different types of the same atom use 
+# C C+ (C1+ in VASP OK but C+ needed here) C2+ C3+ ....
+types:
+# Ag:
+#  CHARGES: 0.0
+#  LJ_PARAMETERS:
+#   0: 2.9
+#   1: 38.043
+#  MASS: 107.87
+#  REQUIRED_CONNECTORS: 
+#   0: None
+# C1
+ C:
+  CHARGES: 0.5
+  LJ_PARAMETERS:
+   0: 3.88
+   1: .0844
+  MASS: 12.01
+  REQUIRED_CONNECTORS:
+   0: None 
+ F:
+  CHARGES: -0.28
+  LJ_PARAMETERS:
+   0: 3.40
+   1: .050
+  MASS: 19.0
+  REQUIRED_CONNECTORS: 
+   0: None
+ H:
+  CHARGES: 0.41
+  LJ_PARAMETERS:
+   0: .9
+   1: .01
+  MASS: 1.01
+  REQUIRED_CONNECTORS: 
+   0: None
+ O:
+  CHARGES: -0.82
+  LJ_PARAMETERS:
+   0: 3.4
+   1: .096
+  MASS: 16.0
+  REQUIRED_CONNECTORS: 
+   0: None
+ Pt:
+  CHARGES: 0.0
+  LJ_PARAMETERS:
+   0: 2.72
+   1: 72.4
+  MASS: 195.1
+  REQUIRED_CONNECTORS: 
+   0: None
+ S:
+  CHARGES: 1.08
+  LJ_PARAMETERS:
+   0: 4.03
+   1: .344
+  MASS: 32.06
+  REQUIRED_CONNECTORS: 
+   0: None
+ C+:
+  CHARGES: 0.84
+  LJ_PARAMETERS:
+   0: 3.88
+   1: .0844
+  MASS: 12.01
+  REQUIRED_CONNECTORS:
+   0: None 
+ C2+:
+  CHARGES: 0.54
+  LJ_PARAMETERS:
+   0: 3.88
+   1: .0844
+  MASS: 12.01
+  REQUIRED_CONNECTORS:
+   0: None 
+ C3+:
+  CHARGES: 0.5
+  LJ_PARAMETERS:
+   0: 3.88
+   1: .0844
+  MASS: 12.01
+  REQUIRED_CONNECTORS:
+   0: None 
+ C4+:
+  CHARGES: 0.46
+  LJ_PARAMETERS:
+   0: 3.88
+   1: .0844
+  MASS: 12.01
+  REQUIRED_CONNECTORS:
+   0: None 
+ C5+:
+  CHARGES: 0.41
+  LJ_PARAMETERS:
+   0: 3.88
+   1: .0844
+  MASS: 12.01
+  REQUIRED_CONNECTORS:
+   0: None 
+ C6+:
+  CHARGES: 0.31
+  LJ_PARAMETERS:
+   0: 3.88
+   1: .0844
+  MASS: 12.01
+  REQUIRED_CONNECTORS:
+   0: None 
+
+ F+:
+  CHARGES: -0.28
+  LJ_PARAMETERS:
+   0: 3.40
+   1: .050
+  MASS: 19.0
+  REQUIRED_CONNECTORS: 
+   0: None
+ F2+:
+  CHARGES: -0.27
+  LJ_PARAMETERS:
+   0: 3.40
+   1: .050
+  MASS: 19.0
+  REQUIRED_CONNECTORS: 
+   0: None
+ F3+:
+  CHARGES: -0.25
+  LJ_PARAMETERS:
+   0: 3.40
+   1: .050
+  MASS: 19.0
+  REQUIRED_CONNECTORS: 
+   0: None
+ F4+:
+  CHARGES: -0.22
+  LJ_PARAMETERS:
+   0: 3.40
+   1: .050
+  MASS: 19.0
+  REQUIRED_CONNECTORS: 
+   0: None
+ F5+:
+  CHARGES: -0.24
+  LJ_PARAMETERS:
+   0: 3.40
+   1: .050
+  MASS: 19.0
+  REQUIRED_CONNECTORS: 
+   0: None
+ F6+:
+  CHARGES: -0.31
+  LJ_PARAMETERS:
+   0: 3.40
+   1: .050
+  MASS: 19.0
+  REQUIRED_CONNECTORS: 
+   0: None
+
+ H2+:
+  CHARGES: 0.41
+  LJ_PARAMETERS:
+   0: .9
+   1: .01
+  MASS: 1.01
+  REQUIRED_CONNECTORS: 
+   0: None
+ H3+:
+  CHARGES: 0.4606
+  LJ_PARAMETERS:
+   0: .9
+   1: .01
+  MASS: 1.01
+  REQUIRED_CONNECTORS: 
+   0: None
+
+ O+:
+  CHARGES: -0.61
+  LJ_PARAMETERS:
+   0: 3.4
+   1: .096
+  MASS: 16.0
+  REQUIRED_CONNECTORS: 
+   0: None
+ O2+:
+  CHARGES: -0.82
+  LJ_PARAMETERS:
+   0: 3.4
+   1: .096
+  MASS: 16.0
+  REQUIRED_CONNECTORS: 
+   0: None
+ O3+:
+  CHARGES: -0.3818
+  LJ_PARAMETERS:
+   0: 3.4
+   1: .096
+  MASS: 16.0
+  REQUIRED_CONNECTORS: 
+   0: None
+ O4+:
+  CHARGES: -0.54
+  LJ_PARAMETERS:
+   0: 3.4
+   1: .096
+  MASS: 16.0
+  REQUIRED_CONNECTORS: 
+   0: None
+ O5+:
+  CHARGES: -0.5
+  LJ_PARAMETERS:
+   0: 3.4
+   1: .096
+  MASS: 16.0
+  REQUIRED_CONNECTORS: 
+   0: None
+
+ Pt:
+  CHARGES: 0.0
+  LJ_PARAMETERS:
+   0: 2.72
+   1: 72.4
+  MASS: 195.1
+  REQUIRED_CONNECTORS: 
+   0: None
+ S+:
+  CHARGES: 1.08
+  LJ_PARAMETERS:
+   0: 4.03
+   1: .344
+  MASS: 32.06
+  REQUIRED_CONNECTORS: 
+   0: None
+
+
+#BONDS (STRETCHING), ENERGY [kcal/mol/A^2], LENGTH [A]
+bonds:
+ 0:
+  i: O
+  j: S
+  ENERGY: 700.
+  LENGTH: 1.48
+ 1:
+  i: C
+  j: C
+  ENERGY: 429.3
+  LENGTH: 1.50
+ 2:
+  i: C
+  j: F
+  ENERGY: 605.3
+  LENGTH: 1.34
+ 3:
+  i: C
+  j: O
+  ENERGY: 700.0
+  LENGTH: 1.42
+ 4:
+  i: C
+  j: S
+  ENERGY: 700.
+  LENGTH: 1.8
+ 5:
+  i: H
+  j: O
+  ENERGY: 500.
+  LENGTH: 1.0  
+#  6:
+#   i: O
+#   j: O
+#   ENERGY: 500.
+#   LENGTH: 1.3 
+#  7:
+#   i: Pt
+#   j: O
+#   ENERGY: 500.
+#   LENGTH: 2.5  
+  
+
+#ANGLES (BENDING), ENERGY [kcal/mol/rad^2], THETA [deg]
+angles:
+ 0:
+  i: O
+  j: S
+  k: O
+  ENERGY: 350.
+  THETA: 115.5
+ 1:
+  i: O
+  j: S
+  k: C
+  ENERGY: 350.
+  THETA: 109.5
+ 2:
+  i: S
+  j: C
+  k: F
+  ENERGY: 100.
+  THETA: 109.5
+ 3:
+  i: C
+  j: C
+  k: F
+  ENERGY: 100.3
+  THETA: 118.3
+ 4:
+  i: F
+  j: C
+  k: F
+  ENERGY: 108.2
+  THETA: 121.5
+ 5:
+  i: S
+  j: C
+  k: C
+  ENERGY: 100.
+  THETA: 109.5
+ 6:
+  i: C
+  j: C
+  k: O
+  ENERGY: 100.
+  THETA: 109.5
+ 7:
+  i: O
+  j: C
+  k: F
+  ENERGY: 100.
+  THETA: 109.5
+ 8:
+  i: H
+  j: O
+  k: H
+  ENERGY: 120.
+  THETA: 109.5
+ 9:
+  i: S
+  j: O
+  k: H
+  ENERGY: 120.
+  THETA: 180.
+ 
+
+
+#PROPER TORSIONS, ENERGY [kcal/mol], ANGLE [deg], MULTIPLICITY [m] how many ways to configure?
+propertorsions:
+ 0:
+  i: S
+  j: C
+  k: C
+  l: O
+  ENERGY: 2.0
+  ANGLE: 0.
+  MULTIPLICITY: 1
+ 1:
+  i: F
+  j: C
+  k: O
+  l: C
+  ENERGY: 2.0
+  ANGLE: 0.
+  MULTIPLICITY: 1
+ 2:
+  i: C
+  j: C
+  k: S
+  l: O
+  ENERGY: 2.0
+  ANGLE: 0.
+  MULTIPLICITY: 1
+ 3:
+  i: F
+  j: C
+  k: S
+  l: O
+  ENERGY: 2.0
+  ANGLE: 0.
+  MULTIPLICITY: 1
+ 4:
+  i: S
+  j: C
+  k: C
+  l: F
+  ENERGY: 2.0
+  ANGLE: 0.
+  MULTIPLICITY: 1
+ 5:
+  i: C
+  j: C
+  k: O
+  l: C
+  ENERGY: 2.0
+  ANGLE: 0.
+  MULTIPLICITY: 1
+ 6:
+  i: F
+  j: C
+  k: C
+  l: F
+  ENERGY: 8.085
+  ANGLE: 0.
+  MULTIPLICITY: 1
+  
+
