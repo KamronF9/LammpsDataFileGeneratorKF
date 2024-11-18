@@ -14,7 +14,7 @@ curveFitPlot = False
 kernelResample = True
 leastSq = True
 
-bulkOnly = False # bulk only simulation
+bulkOnly = True # bulk only simulation
 
 
 # CSV naming:

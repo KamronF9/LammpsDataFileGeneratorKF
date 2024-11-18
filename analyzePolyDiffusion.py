@@ -771,6 +771,10 @@ structures = []
 # fnames = sorted(glob.glob('*.dump'))[:1] # # just use first 0,1 [:2]
 fnames = sorted(glob.glob('../cleandumps/*.dump'))  # use all 
 print(fnames)
+print('Using this dict mapping:')
+type_dict={1:'H',2:'O'}
+# type_dict={1:'C',2:'F',3:'H',4:'O',5:'Pt',6:'S'}
+print(type_dict)
 
 for filename in fnames:
     print(filename)
@@ -808,7 +812,9 @@ for filename in fnames:
 
 
     for iframe, frame in enumerate(frames):
-        # if iframe==10: break
+        print('HACK mode - only running small amt frames!!')
+        if iframe==220: break
+
         # if iframe+1 == endFrame: break
         if iframe == endFrame: break
         print('current frames/total =', iframe+1, '/' , endFrame) # 1 basis
@@ -816,7 +822,7 @@ for filename in fnames:
         coords=np.stack((frame.data.x.to_numpy(),frame.data.y.to_numpy(),frame.data.z.to_numpy())).T
         # print(coords[6579])
         # atomic_symbols = frame.data.element
-        type_dict={1:'C',2:'F',3:'H',4:'O',5:'Pt',6:'S'}
+        
         # print('frame.data.type', frame.data.type)
         # account for if an atom dissappears
         atomic_symbols = [type_dict[i] for i in frame.data.type]
@@ -847,6 +853,7 @@ for filename in fnames:
 # cmax=116. # old
 # cmax = 99.
 cmax = lattice.c
+# print(cmax)
 # get the fraction = Pt 10Ang from botton and top
 fractRangeBottom = 10./cmax
 fractRangeTop= 1. - 10./cmax
@@ -862,7 +869,8 @@ fractOneThirds = 1./3. * rangeBetween + fractRangeBottom
 # 3 - upper surface
 # Bulk only:
 # 4 - complete full region
-cs = np.array([[fractRangeBottom,fractRangeTop],[fractRangeBottom,fractOneThirds],[fractOneThirds,fractTwoThirds],[fractTwoThirds,fractRangeTop], [0.0, 1.0]]) # for 14 nafions or any variant in scale
+# cs = np.array([[fractRangeBottom,fractRangeTop],[fractRangeBottom,fractOneThirds],[fractOneThirds,fractTwoThirds],[fractTwoThirds,fractRangeTop], [0.0, 1.0]]) # for 14 nafions or any variant in scale
+cs = np.array([[fractRangeBottom,fractRangeTop],[fractRangeBottom,fractOneThirds],[fractOneThirds,fractTwoThirds],[fractTwoThirds,fractRangeTop], [-99999., 99999.]]) # for 14 nafions or any variant in scale
 
 cs = cs.tolist()
 
@@ -875,14 +883,24 @@ with open('diffResults.txt', 'w') as fout:
         # [[0.12696370256529627, 0.3756545675217654], [0.3756545675217654, 0.6243454324782345], [0.6243454324782345, 0.8730362974347037]]
 
         for i,c in enumerate(cs):
-
+            
+            print('HACK - in bulk only analysis skipping z slice analysis!!!')
+            if i!=4: continue
+            
+            print('i:', i)
             print('Region:', c)
             # from_structures(structures,specie,temperature,time_step,step_skip,initial_disp=None,initial_structure=None,**kwargs)
             # ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 1,100,initial_disp=None,initial_structure=structures[0],c_ranges=[(0.25,0.75)])
             # ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 1,100,initial_disp=None,initial_structure=structures[0],c_ranges=[(25.,75.)])
             # ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 1,100,initial_disp=None,initial_structure=structures[0],c_ranges=[(0.,25.),(25.,75.)])
             # ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 1,100,initial_disp=None,initial_structure=structures[0],c_ranges=[(0.,.25)])
-            ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 100,1,initial_disp=None,initial_structure=structures[0],c_ranges=[c], smoothed=True) # ,smoothed=False
+            
+            # print('Running proton diffusion')
+            # ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 100,1,initial_disp=None,initial_structure=structures[0],c_ranges=[c], smoothed=True) # ,smoothed=False
+            
+            print('Running oxygen diffusion')
+            ob=DiffusionAnalyzer.from_structures(structures, 'O', 300, 100,1,initial_disp=None,initial_structure=structures[0],c_ranges=[c], smoothed=True) # ,smoothed=False
+            
             # ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 5,10,initial_disp=None,initial_structure=structures[0],c_ranges=[c]) 
             print('diffusivity_c_range_components ',ob.diffusivity_c_range_components)
             print('std ',ob.diffusivity_c_range_components_std_dev)
