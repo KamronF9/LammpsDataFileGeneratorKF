@@ -116,7 +116,7 @@ if kernelResample:
             m = max(m, 1e-15)
 
             # factor of 100 is to convert from Å^2/ps to m^2/s x 10^10
-            # XXfactor of 10 is to convert from Å^2/fs to cm^2/s
+            # XXfactor of 1/10 is to convert from Å^2/fs to cm^2/s
             # factor of 6 is for dimensionality
             diffusivity = m / 6 * 100
             print(f'i={i}',file=fileOut)

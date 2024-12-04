@@ -772,8 +772,8 @@ structures = []
 fnames = sorted(glob.glob('../cleandumps/*.dump'))  # use all 
 print(fnames)
 print('Using this dict mapping:')
-type_dict={1:'H',2:'O'}
-# type_dict={1:'C',2:'F',3:'H',4:'O',5:'Pt',6:'S'}
+# type_dict={1:'H',2:'O'}
+type_dict={1:'C',2:'F',3:'H',4:'O',5:'Pt',6:'S'}
 print(type_dict)
 
 for filename in fnames:
@@ -812,8 +812,8 @@ for filename in fnames:
 
 
     for iframe, frame in enumerate(frames):
-        print('HACK mode - only running small amt frames!!')
-        if iframe==220: break
+        # print('HACK mode - only running small amt frames!!')
+        # if iframe==300: break
 
         # if iframe+1 == endFrame: break
         if iframe == endFrame: break
@@ -884,8 +884,8 @@ with open('diffResults.txt', 'w') as fout:
 
         for i,c in enumerate(cs):
             
-            print('HACK - in bulk only analysis skipping z slice analysis!!!')
-            if i!=4: continue
+            # print('HACK - in bulk only analysis skipping z slice analysis!!!')
+            # if i!=4: continue
             
             print('i:', i)
             print('Region:', c)
@@ -895,13 +895,15 @@ with open('diffResults.txt', 'w') as fout:
             # ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 1,100,initial_disp=None,initial_structure=structures[0],c_ranges=[(0.,25.),(25.,75.)])
             # ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 1,100,initial_disp=None,initial_structure=structures[0],c_ranges=[(0.,.25)])
             
-            # print('Running proton diffusion')
-            # ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 100,1,initial_disp=None,initial_structure=structures[0],c_ranges=[c], smoothed=True) # ,smoothed=False
+            print('Running proton diffusion')
+            ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 100,1,initial_disp=None,initial_structure=structures[0],c_ranges=[c], smoothed=True) # ,smoothed=False
+            # ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 100,1,initial_disp=None,initial_structure=structures[0],c_ranges=[c], smoothed=False) # ,smoothed=False
             
-            print('Running oxygen diffusion')
-            ob=DiffusionAnalyzer.from_structures(structures, 'O', 300, 100,1,initial_disp=None,initial_structure=structures[0],c_ranges=[c], smoothed=True) # ,smoothed=False
+            # print('Running oxygen diffusion')
+            # # ob=DiffusionAnalyzer.from_structures(structures, 'O', 300, 100,1,initial_disp=None,initial_structure=structures[0],c_ranges=[c], smoothed=True) # ,smoothed=False
+            # ob=DiffusionAnalyzer.from_structures(structures, 'O', 300, 100,1,initial_disp=None,initial_structure=structures[0],c_ranges=[c], smoothed=False) # ,smoothed=False
             
-            # ob=DiffusionAnalyzer.from_structures(structures, 'H', 300, 5,10,initial_disp=None,initial_structure=structures[0],c_ranges=[c]) 
+            
             print('diffusivity_c_range_components ',ob.diffusivity_c_range_components)
             print('std ',ob.diffusivity_c_range_components_std_dev)
             print('total ', ob.diffusivity_c_range)

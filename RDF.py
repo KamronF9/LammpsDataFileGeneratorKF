@@ -3,6 +3,7 @@
 import numpy as np
 import sys
 import glob
+import os
 
 # need at least two timesteps
 # if len(sys.argv)<2:
@@ -11,6 +12,9 @@ import glob
 
 # inFile = sys.argv[1] #lammps dump file
 # RFile = sys.argv[2] #lattice dump file
+
+# copy clean dump files into directory for preprocessing/editing and processing
+os.system('cp ../cleandumps/test100fs* .')
 
 for ifile, file in enumerate(sorted(glob.glob('test100fs*'))):
     inFile = file
@@ -123,8 +127,8 @@ for ifile, file in enumerate(sorted(glob.glob('test100fs*'))):
             refLine = iLine+1
             R = np.zeros((3,3))
             Tric = np.zeros((6))
-            bounds = np.zeros((3,3)) # use depending on the dump style of box
-            # bounds = np.zeros((3,2))
+            # bounds = np.zeros((3,3)) # use depending on the dump style of box
+            bounds = np.zeros((3,2))
         # Atomic positions
         if atposActive and iLine<refLine+nAtoms:
             iRow = iLine-refLine
