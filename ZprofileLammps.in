@@ -5,39 +5,79 @@ units                   metal
 boundary                p p p
 atom_style              full
 atom_modify map yes
-newton on
+# For compute property/atom, if newton bond off is set, it will be tallied with both I and J atoms. 
+
+newton off
 
 echo            both
 
+#Removed bond style since bonds aren't defined. 
 bond_style harmonic
 
-neighbor        0.5 bin
-neigh_modify    every 1 delay 0 check yes
+#neighbor        0.5 bin
+#neigh_modify    every 1 delay 0 check yes
 
-read_data              polyHydroniumWaterhalfHequilibRunning.data
+#Setting angle and dihedral style to make this work -SB
+angle_style harmonic
+dihedral_style harmonic
 
-group sulfur type 6
+# data file here is the one used in running delta MLP MD containing bonds on polymer
+read_data polyHydroniumWaternoHrunning.data
+
+#Create groups is an option if we maintain atom IDs between classical and MLP MD. 
+# But this is not done now so moot
+#group notPolymer type 19 20 22 23 5
+#group water type 19 22
+
+compute bond_count all property/atom nbonds 
+fix b1 all ave/atom 1 1 1 c_bond_count 
+variable bonded_atoms_var atom "f_b1 > 0" 
+# either above or below seems to work but a fix seems to be needed
+#variable bonded_atoms atom "c_bond_count > 0" 
+run 0
+
+#compute sumbonds all reduce sum c_bond_count
+#variable sumvar equal c_sumbonds
+#print "$(v_sumvar)"
+
+
+group bonded_atoms variable bonded_atoms_var
+#group bonded_atoms dynamic all var bonded_atoms_var
+
+#Create water and hydronium group
+group Pt type 5
+group PolyPt union bonded_atoms Pt
+group waterAndHydronium subtract all PolyPt
+
 
 # variables
-variable	freq equal 200
-variable	start equal 0
-variable	end   equal 5000000
-variable	num equal (${end}-${start})/${freq}
+#variable	freq equal 200
+variable	freq equal 1
+#variable	start equal 0
+#variable	end   equal 5000000
+#variable	num equal (${end}-${start})/${freq}
+#variable	num equal (5000000-${start})/${freq}
+#variable	num equal (5000000-0)/${freq}
+#variable	num equal (5000000-0)/200
 
 
 # compute density profile
 # determine size of bins
-variable    binsz equal 1.0
+#variable    binsz equal 1.0
 
 compute	  prof	  all chunk/atom bin/1d z lower 0.01 units reduced
-compute	  profS	  sulfur chunk/atom bin/1d z lower 0.01 units reduced
+compute   profBond   bonded_atoms chunk/atom bin/1d z lower 0.01 units reduced
+compute   profWater   waterAndHydronium chunk/atom bin/1d z lower 0.01 units reduced
+
 
 # uses input from timesteps every ${freq}, does num averages, outputs at the end
-# 300000 max for one just list larger and it does all
-#fix		prof_ave all ave/chunk ${freq} ${num} ${end}  prof density/mass file dens.txt
-fix		prof_ave1 all ave/chunk ${freq} 1 100000000 prof density/mass file densAll.txt
-fix		prof_ave2 sulfur ave/chunk ${freq} 1 100000000 prof density/mass file densSulfurAll.txt
+# it is easier for a final answer just to avg all
 
-rerun		../test100fsInt01.dump ../test100fsInt02.dump ../test100fsInt03.dump ../test100fsInt04.dump ../test100fsInt05.dump ../test100fsInt06.dump ../test100fsInt07.dump ../test100fsInt08.dump ../test100fsInt09.dump ../test100fsInt10.dump dump x y z
-#rerun		test100fsInt10.dump dump x y z
-#rerun		test100fsInt01.dump first ${start} every ${freq} dump x y z
+fix		prof_ave1 all ave/chunk ${freq} 1 1 prof density/mass file zdensAll.txt ave running overwrite
+fix		prof_ave2 bonded_atoms ave/chunk ${freq} 1 1 prof density/mass file zpolymer.txt ave running overwrite
+fix     prof_ave3 waterAndHydronium ave/chunk ${freq} 1 1 prof density/mass file zwaterHydron.txt ave running overwrite
+
+
+# rerun ../../test100fsInt02.dump ../../test100fsInt03.dump ../../test100fsInt04.dump ../../test100fsInt05.dump ../../test100fsInt06.dump ../../test100fsInt07.dump ../../test100fsInt08.dump ../../test100fsInt09.dump ../../test100fsInt10.dump ../../test100fsInt11.dump ../../test100fsInt12.dump every 1 dump x y z box yes replace yes
+# Take just last ~ half:
+rerun ../../test100fsInt08.dump ../../test100fsInt09.dump ../../test100fsInt10.dump ../../test100fsInt11.dump ../../test100fsInt12.dump every 1 dump x y z box yes replace yes
