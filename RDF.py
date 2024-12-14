@@ -13,11 +13,30 @@ import os
 # inFile = sys.argv[1] #lammps dump file
 # RFile = sys.argv[2] #lattice dump file
 
+zFilterOn = False # True - filter to only include atoms in a particular region - not fully working yet
+print('zFilterOn ', zFilterOn)
+
+preprocess = True
+print('preprocess', preprocess)
 # copy clean dump files into directory for preprocessing/editing and processing
-os.system('cp ../cleandumps/test100fs* .')
+
+PtPolyWaterSys = False # if the system includes the Pt surface for setting the box size variable
+# if PtPolyWaterSys:
+#     zScale = 0.5 # scale down to account for regional rdf
+# else:
+#     zScale = 1.0
+
+if preprocess:
+    os.system('cp ../cleandumps/test100fs* .')
+
+
+# print('HACK - running only on last dump')
+# for ifile, file in enumerate(sorted(glob.glob('test100fsInt12*'))):
 
 for ifile, file in enumerate(sorted(glob.glob('test100fs*'))):
+
     inFile = file
+    print(file)
     intervalNum = str(ifile) #inFile[-6] # interval int value 
     
 
@@ -75,10 +94,8 @@ for ifile, file in enumerate(sorted(glob.glob('test100fs*'))):
             with open(inFile, 'a') as f:  # append mode
                 f.write('TIMESTEP')
 
-
     for iLine,line in enumerate(open(inFile)):
         
-
 
         #Lattice vectors:
         if latvecActive and iLine<refLine+3:
@@ -127,8 +144,12 @@ for ifile, file in enumerate(sorted(glob.glob('test100fs*'))):
             refLine = iLine+1
             R = np.zeros((3,3))
             Tric = np.zeros((6))
-            # bounds = np.zeros((3,3)) # use depending on the dump style of box
-            bounds = np.zeros((3,2))
+
+            if PtPolyWaterSys:
+                bounds = np.zeros((3,2)) # Pt system
+            else:
+                bounds = np.zeros((3,3)) # use depending on the dump style of box - bulk
+
         # Atomic positions
         if atposActive and iLine<refLine+nAtoms:
             iRow = iLine-refLine
@@ -172,7 +193,16 @@ for ifile, file in enumerate(sorted(glob.glob('test100fs*'))):
                 rdfInited = True
 
             x = np.dot(atpos, np.linalg.inv(R.T))   # normalize positions to lattice shape
-            xS = x[np.where(atNames=='S')[0]]
+            
+
+            if zFilterOn:
+                # only include in particular region - Z above 1/3 and below 2/3
+                xS = x[np.where((x[:,2]>0.3) & (x[:,2]<0.8))[0]]
+                # print(np.where((x[:,2]>0.33) & (x[:,2]<0.66))[0])
+            else:
+                # include all atoms
+                xS = x[np.where(atNames=='S')[0]]
+                
             # xPt = x[np.where(atNames=='Pt')[0]]
             # xO = x[np.where(atNames=='O')[0]]
             # xNa = x[np.where(atNames==3)[0]]
@@ -198,6 +228,9 @@ for ifile, file in enumerate(sorted(glob.glob('test100fs*'))):
             #     saveRDF = False # reset save flag
 
             nSteps += 1
+
+            # print('HACK2')
+            # break
 
     # save all
     if not saveIntermedRDFs:

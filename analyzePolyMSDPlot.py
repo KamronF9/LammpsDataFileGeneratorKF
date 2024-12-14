@@ -14,7 +14,7 @@ curveFitPlot = False
 kernelResample = True
 leastSq = True
 
-bulkOnly = True # bulk only simulation
+bulkOnly = False # bulk only simulation
 
 
 # CSV naming:
@@ -87,7 +87,9 @@ if kernelResample:
          # bulk, avg top/bottom
         dataToProcess = [1,3]
         labels = ['Pt/O Surface','Bulk','Pt Surface','Pt Surfaces']
-        
+    
+    plt.figure(figsize=(4,3))
+
     for i in dataToProcess:
 
         df = allMSDs[i]

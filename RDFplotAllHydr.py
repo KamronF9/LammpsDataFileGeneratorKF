@@ -18,7 +18,8 @@ for atPairs in ['SS']:
 
     # fnames = sorted(glob.glob(f'*SS*RDF.csv'))
     plotFile = atPairs+"RDFallHydr.pdf"
-    hydrLevels = ['12Pt', '12Bulk', '12OFF']
+    hydrLevels = [9, 12, 15]
+    # hydrLevels = ['12Pt', '12Bulk', '12OFF']
     # hydrLevels = [9, 12, '12OFF', 15]
     # hydrLevels = [9, 12, '12OFF', '6JINN', '12JINN'] # 15
     # hydrLevels = [12, '12OFF', '12JINN'] # 15
