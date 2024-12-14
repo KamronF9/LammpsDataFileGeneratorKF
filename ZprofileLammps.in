@@ -22,7 +22,7 @@ angle_style harmonic
 dihedral_style harmonic
 
 # data file here is the one used in running delta MLP MD containing bonds on polymer
-read_data polyHydroniumWaternoHrunning.data
+read_data ../polyHydroniumWaternoHrunning.data
 
 #Create groups is an option if we maintain atom IDs between classical and MLP MD. 
 # But this is not done now so moot
@@ -80,4 +80,4 @@ fix     prof_ave3 waterAndHydronium ave/chunk ${freq} 1 1 prof density/mass file
 
 # rerun ../../test100fsInt02.dump ../../test100fsInt03.dump ../../test100fsInt04.dump ../../test100fsInt05.dump ../../test100fsInt06.dump ../../test100fsInt07.dump ../../test100fsInt08.dump ../../test100fsInt09.dump ../../test100fsInt10.dump ../../test100fsInt11.dump ../../test100fsInt12.dump every 1 dump x y z box yes replace yes
 # Take just last ~ half:
-rerun ../../test100fsInt08.dump ../../test100fsInt09.dump ../../test100fsInt10.dump ../../test100fsInt11.dump ../../test100fsInt12.dump every 1 dump x y z box yes replace yes
+rerun ../cleandumps/test100fsInt08.dump ../cleandumps/test100fsInt09.dump ../cleandumps/test100fsInt10.dump ../cleandumps/test100fsInt11.dump ../cleandumps/test100fsInt12.dump every 1 dump x y z box yes replace yes

@@ -22,6 +22,9 @@ plotFile = "zProfileAllHydr.pdf"
 hydrLevels = [9]
 # hydrLevels = [9, 12, 15]
 allHydrData = []
+zMax = [63.2, 68.6, 72.6]
+ihydr = 0 # to choose which zmax to use
+print('ihydr set zmax to', ihydr)
 
 # plt.figure(figsize=(4,3))
 plt,ax1 = plt.subplots(figsize=(4,3))
@@ -33,7 +36,7 @@ for hydrLevel in hydrLevels:
     # fnames = ['densAll.txt', 'densSulfurAll.txt']
     
     # for fname in fnames:
-    fname = f'densAll.txt'
+    fname = f'zpolymer.txt'
     print(fname)
     df = pd.read_csv(fname, skiprows=4, index_col=False,  names=['index', 'fraction','number','density'], delim_whitespace=True)
     #,sep='\s+')
@@ -46,23 +49,25 @@ for hydrLevel in hydrLevels:
     # g = gaussian_filter1d(df['g'],3) 
     # g = df['g']
     color = 'tab:red'
-    ax1.set_xlabel('Z fractional position')
-    ax1.set_ylabel('Total Mass Density ($g/cm^3$)', color=color)
-    ax1.plot(df['fraction'], df['density'], color=color, label=f'All')
-    ax1.set_ylim(0.05, 100)
+    # ax1.set_xlabel('Z fractional position')
+    ax1.set_xlabel('Z (Ang)')
+    ax1.set_ylabel('Polymer Mass Density ($g/cm^3$)', color=color)
+    ax1.plot(df['fraction']*zMax[ihydr], df['density'], color=color, label=f'All')
+    ax1.set_ylim(0.05, 10)
     ax1.set_yscale('log')
     
 
     
-    fname = f'densSulfurAll.txt'
+    fname = f'zwaterHydron.txt'
     print(fname)
     color = 'tab:blue'
     
     df = pd.read_csv(fname, skiprows=4, index_col=False,  names=['index', 'fraction','number','density'], delim_whitespace=True)
     ax2 = ax1.twinx() 
-    ax2.set_ylabel('Sulfur Mass Density ($g/cm^3$)', color=color)
-    ax2.plot(df['fraction'], df['density'], color=color, label=f'Sulfur')
-    ax2.set_ylim(0.05, 1)
+    ax2.set_ylabel('Water Mass Density ($g/cm^3$)', color=color)
+    ax2.plot(df['fraction']*zMax[ihydr], df['density'], color=color, label=f'Sulfur')
+    # ax2.set_ylim(0.05, 1)
+    ax2.set_ylim(0.05, 10)
     ax2.set_yscale('log')
 
 # plt.plot(rMid, rdf)
