@@ -53,7 +53,7 @@ for hydrLevel in hydrLevels:
     ax1.set_xlabel('Z (Ang)')
     ax1.set_ylabel('Polymer Mass Density ($g/cm^3$)', color=color)
     ax1.plot(df['fraction']*zMax[ihydr], df['density'], color=color, label=f'All')
-    ax1.set_ylim(0.05, 10)
+    ax1.set_ylim(0.01, 10)
     ax1.set_yscale('log')
     
 
@@ -67,7 +67,7 @@ for hydrLevel in hydrLevels:
     ax2.set_ylabel('Water Mass Density ($g/cm^3$)', color=color)
     ax2.plot(df['fraction']*zMax[ihydr], df['density'], color=color, label=f'Sulfur')
     # ax2.set_ylim(0.05, 1)
-    ax2.set_ylim(0.05, 10)
+    ax2.set_ylim(0.01, 10)
     ax2.set_yscale('log')
 
 # plt.plot(rMid, rdf)
