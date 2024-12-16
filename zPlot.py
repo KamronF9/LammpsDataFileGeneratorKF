@@ -23,7 +23,7 @@ hydrLevels = [9]
 # hydrLevels = [9, 12, 15]
 allHydrData = []
 zMax = [63.2, 68.6, 72.6]
-ihydr = 0 # to choose which zmax to use
+ihydr = int(sys.argv[1]) # to choose which zmax to use
 print('ihydr set zmax to', ihydr)
 
 # plt.figure(figsize=(4,3))
@@ -51,9 +51,10 @@ for hydrLevel in hydrLevels:
     color = 'tab:red'
     # ax1.set_xlabel('Z fractional position')
     ax1.set_xlabel('Z (Ang)')
-    ax1.set_ylabel('Polymer Mass Density ($g/cm^3$)', color=color)
-    ax1.plot(df['fraction']*zMax[ihydr], df['density'], color=color, label=f'All')
-    ax1.set_ylim(0.01, 10)
+    ax1.set_ylabel('Mass Density ($g/cm^3$)')
+    # ax1.plot(df['fraction']*zMax[ihydr], gaussian_filter1d(df['density'],1), label=f'Polymer')
+    ax1.plot(df['fraction']*zMax[ihydr], df['density'], label=f'Polymer')
+    ax1.set_ylim(0.05, 10)
     ax1.set_yscale('log')
     
 
@@ -63,12 +64,13 @@ for hydrLevel in hydrLevels:
     color = 'tab:blue'
     
     df = pd.read_csv(fname, skiprows=4, index_col=False,  names=['index', 'fraction','number','density'], delim_whitespace=True)
-    ax2 = ax1.twinx() 
-    ax2.set_ylabel('Water Mass Density ($g/cm^3$)', color=color)
-    ax2.plot(df['fraction']*zMax[ihydr], df['density'], color=color, label=f'Sulfur')
+    # ax2 = ax1.twinx() 
+    # ax2.set_ylabel('Water Mass Density ($g/cm^3$)', color=color)
+    ax1.plot(df['fraction']*zMax[ihydr], df['density'], label=f'Water')
     # ax2.set_ylim(0.05, 1)
-    ax2.set_ylim(0.01, 10)
-    ax2.set_yscale('log')
+    # ax2.set_ylim(0.01, 10)
+    # ax1.set_yscale('log')
+    ax1.legend()
 
 # plt.plot(rMid, rdf)
 # plt.xlim(0, 15)

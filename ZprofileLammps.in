@@ -77,7 +77,7 @@ fix		prof_ave1 all ave/chunk ${freq} 1 1 prof density/mass file zdensAll.txt ave
 fix		prof_ave2 bonded_atoms ave/chunk ${freq} 1 1 prof density/mass file zpolymer.txt ave running overwrite
 fix     prof_ave3 waterAndHydronium ave/chunk ${freq} 1 1 prof density/mass file zwaterHydron.txt ave running overwrite
 
-
-# rerun ../../test100fsInt02.dump ../../test100fsInt03.dump ../../test100fsInt04.dump ../../test100fsInt05.dump ../../test100fsInt06.dump ../../test100fsInt07.dump ../../test100fsInt08.dump ../../test100fsInt09.dump ../../test100fsInt10.dump ../../test100fsInt11.dump ../../test100fsInt12.dump every 1 dump x y z box yes replace yes
+# take all but the first part of MD
+# rerun ../cleandumps/test100fsInt02.dump ../cleandumps/test100fsInt03.dump ../cleandumps/test100fsInt04.dump ../cleandumps/test100fsInt05.dump ../cleandumps/test100fsInt06.dump ../cleandumps/test100fsInt07.dump ../cleandumps/test100fsInt08.dump ../cleandumps/test100fsInt09.dump ../cleandumps/test100fsInt10.dump ../cleandumps/test100fsInt11.dump ../cleandumps/test100fsInt12.dump every 1 dump x y z box yes replace yes
 # Take just last ~ half:
 rerun ../cleandumps/test100fsInt08.dump ../cleandumps/test100fsInt09.dump ../cleandumps/test100fsInt10.dump ../cleandumps/test100fsInt11.dump ../cleandumps/test100fsInt12.dump every 1 dump x y z box yes replace yes
