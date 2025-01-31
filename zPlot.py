@@ -25,6 +25,7 @@ allHydrData = []
 zMax = [63.2, 68.6, 72.6]
 ihydr = int(sys.argv[1]) # to choose which zmax to use
 print('ihydr set zmax to', ihydr)
+hydr = [9, 12, 15]
 
 # plt.figure(figsize=(4,3))
 plt,ax1 = plt.subplots(figsize=(4,3))
@@ -70,6 +71,7 @@ for hydrLevel in hydrLevels:
     # ax2.set_ylim(0.05, 1)
     # ax2.set_ylim(0.01, 10)
     # ax1.set_yscale('log')
+    ax1.text(0,6,f'$\lambda={hydr[ihydr]}$')
     ax1.legend()
 
 # plt.plot(rMid, rdf)

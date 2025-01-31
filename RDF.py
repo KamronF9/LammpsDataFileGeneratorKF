@@ -204,7 +204,9 @@ for ifile, file in enumerate(sorted(glob.glob('test100fs*'))):
                 xS = x[np.where(atNames=='S')[0]]
                 
             # xPt = x[np.where(atNames=='Pt')[0]]
-            # xO = x[np.where(atNames=='O')[0]]
+            xO = x[np.where(atNames=='O')[0]]
+            xC = x[np.where(atNames=='C')[0]]
+            xF = x[np.where(atNames=='F')[0]]
             # xNa = x[np.where(atNames==3)[0]]
             def getRDF(x1, x2):
                 dx = x1[None,:,:] - x2[:,None,:]  # None adds a dimension 
@@ -215,8 +217,9 @@ for ifile, file in enumerate(sorted(glob.glob('test100fs*'))):
                 return np.histogram(r, rBins)[0] * (np.linalg.det(R) / (binVol * len(x1) * len(x2))) # local / bulk density
             rdf[:,0] += getRDF(xS, xS)
             # rdf[:,1] += getRDF(xS, xPt)
-            # rdf[:,1] += getRDF(xF, xF)
-            # rdf[:,2] += getRDF(xO, xO)
+            rdf[:,1] += getRDF(xC, xC)
+            rdf[:,2] += getRDF(xF, xF)
+            rdf[:,3] += getRDF(xO, xO)
             # rdf[:,2] += getRDF(xMg, xCl)
             # rdf[:,3] += getRDF(xCl, xCl)
 
@@ -238,7 +241,8 @@ for ifile, file in enumerate(sorted(glob.glob('test100fs*'))):
         rdf *= (1./nSteps)
 
         rdfFile = 'SS_RDF' + intervalNum + '.rdf.datAll'
-        np.savetxt(rdfFile, np.hstack((rMid[:,None], rdf)), header='r gSS', comments='') #  gFF gOO
+        # np.savetxt(rdfFile, np.hstack((rMid[:,None], rdf)), header='r gSS', comments='') #  gFF gOO
+        np.savetxt(rdfFile, np.hstack((rMid[:,None], rdf)), header='r gSS gCC gFF', comments='') #  gFF gOO
         # np.savetxt(rdfFile, np.hstack((rMid[:,None], rdf)), header='r gSS gSPt', comments='') #  gFF gOO
         # rdfFile = 'SPt_RDF' + intervalNum + '.rdf.datAll'
         # np.savetxt(rdfFile, np.hstack((rMid[:,None], rdf)), header='r gSS gSPt', comments='') #  gFF gOO

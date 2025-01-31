@@ -16,6 +16,7 @@ leastSq = True
 
 bulkOnly = False # bulk only simulation
 
+lambdaValue = sys.argv[1] # lambda value to appear on plot
 
 # CSV naming:
 # Pt poly water:
@@ -200,6 +201,7 @@ if kernelResample:
     # plt.xlim(1,2e3)
     plt.ylabel("MSD ($\\AA^2$)")
     plt.xlabel("t (ps)")
+    plt.text(np.max(x_test)*0.85, 2, f'$\lambda={str(lambdaValue)}$')
     # ax = plt.gca()
     # ax.set_aspect('equal', adjustable='box')
 
