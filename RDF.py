@@ -20,7 +20,7 @@ preprocess = True
 print('preprocess', preprocess)
 # copy clean dump files into directory for preprocessing/editing and processing
 
-PtPolyWaterSys = False # if the system includes the Pt surface for setting the box size variable
+PtPolyWaterSys = True # if the system includes the Pt surface for setting the box size variable
 # if PtPolyWaterSys:
 #     zScale = 0.5 # scale down to account for regional rdf
 # else:
@@ -33,8 +33,11 @@ if preprocess:
 # print('HACK - running only on last dump')
 # for ifile, file in enumerate(sorted(glob.glob('test100fsInt12*'))):
 
-for ifile, file in enumerate(sorted(glob.glob('test100fs*'))):
 
+for ifile, file in enumerate(sorted(glob.glob('test100fsInt*'))):
+    print('**** skipping 0-4. using last half of sims for data gen')
+    if ifile < 5:
+        continue
     inFile = file
     print(file)
     intervalNum = str(ifile) #inFile[-6] # interval int value 
@@ -242,7 +245,7 @@ for ifile, file in enumerate(sorted(glob.glob('test100fs*'))):
 
         rdfFile = 'SS_RDF' + intervalNum + '.rdf.datAll'
         # np.savetxt(rdfFile, np.hstack((rMid[:,None], rdf)), header='r gSS', comments='') #  gFF gOO
-        np.savetxt(rdfFile, np.hstack((rMid[:,None], rdf)), header='r gSS gCC gFF', comments='') #  gFF gOO
+        np.savetxt(rdfFile, np.hstack((rMid[:,None], rdf)), header='r gSS gCC gFF gOO', comments='') #  gFF gOO
         # np.savetxt(rdfFile, np.hstack((rMid[:,None], rdf)), header='r gSS gSPt', comments='') #  gFF gOO
         # rdfFile = 'SPt_RDF' + intervalNum + '.rdf.datAll'
         # np.savetxt(rdfFile, np.hstack((rMid[:,None], rdf)), header='r gSS gSPt', comments='') #  gFF gOO

@@ -8,8 +8,8 @@ import glob
 from scipy.ndimage import gaussian_filter1d
 import pandas as pd
 
-# for atPairs in ['SPt','SS','OO']:
-for atPairs in ['SS']:
+for atPairs in ['CC','SS','OO', 'FF']:
+# for atPairs in ['SS']:
 
 # atPairs = 'OO' 
 # atPairs = 'SS' 
@@ -39,10 +39,13 @@ for atPairs in ['SS']:
         plt.plot(df['r'], g, label=f'$\lambda$={str(hydrLevel)}')
         
     # plt.plot(rMid, rdf)
-    plt.xlim(0, 15)
+    if atPairs == 'SS':
+        plt.xlim(0, 15)
+    else:
+        plt.xlim(0, 8)
     # plt.ylim(0, 20)
     plt.xlabel('r [A]')
-    plt.ylabel('g(r)')
+    plt.ylabel(f'g{atPairs}(r)')
     # plt.legend(['MgNa', 'NaCl', 'MgCl', 'ClCl'])
     # plt.legend(['0-40ps', '40-80ps'])
     # plt.legend(['0000', '0001'])
