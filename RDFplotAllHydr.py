@@ -45,7 +45,7 @@ for atPairs in ['CC','SS','OO', 'FF']:
         plt.xlim(0, 8)
     # plt.ylim(0, 20)
     plt.xlabel('r [A]')
-    plt.ylabel(f'g{atPairs}(r)')
+    plt.ylabel(f'$g_{atPairs}(r)$')
     # plt.legend(['MgNa', 'NaCl', 'MgCl', 'ClCl'])
     # plt.legend(['0-40ps', '40-80ps'])
     # plt.legend(['0000', '0001'])
