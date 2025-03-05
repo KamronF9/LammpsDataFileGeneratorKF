@@ -20,7 +20,7 @@ preprocess = True
 print('preprocess', preprocess)
 # copy clean dump files into directory for preprocessing/editing and processing
 
-PtPolyWaterSys = True # if the system includes the Pt surface for setting the box size variable
+PtPolyWaterSys = False # if the system includes the Pt surface for setting the box size variable
 # if PtPolyWaterSys:
 #     zScale = 0.5 # scale down to account for regional rdf
 # else:

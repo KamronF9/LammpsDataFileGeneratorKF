@@ -20,7 +20,7 @@ plotFile = atPairs+"avgAllRDF.pdf"
 plt.figure(figsize=(4,3))
 # for ifile, file in enumerate(sorted(glob.glob('*7.rdf.dat*'))):
 for ifile, file in enumerate(sorted(glob.glob(f'SS_RDF*.rdf.dat*'))):
-    data=np.genfromtxt(file, names=True) # usecols=(0,1,2,3)
+    data=np.genfromtxt(file, names=True, usecols=(0,1,2)) # usecols=(0,1,2) if more data than headers
     labels = data.dtype.names[1:]
     
     allData.append(data['g'+atPairs])

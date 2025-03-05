@@ -8,7 +8,8 @@ import glob
 from scipy.ndimage import gaussian_filter1d
 import pandas as pd
 
-for atPairs in ['CC','SS','OO', 'FF']:
+# for atPairs in ['CC','SS','OO', 'FF']:
+for atPairs in ['SS', 'FF']:
 # for atPairs in ['SS']:
 
 # atPairs = 'OO' 
@@ -25,7 +26,7 @@ for atPairs in ['CC','SS','OO', 'FF']:
     # hydrLevels = [12, '12OFF', '12JINN'] # 15
     allHydrData = []
 
-    plt.figure(figsize=(4,3))
+    plt.figure(figsize=(3,2))
 
     for hydrLevel in hydrLevels:
         fname = f'hydr_{str(hydrLevel)}_{atPairs}_avg_RDF.csv'
@@ -41,11 +42,13 @@ for atPairs in ['CC','SS','OO', 'FF']:
     # plt.plot(rMid, rdf)
     if atPairs == 'SS':
         plt.xlim(0, 15)
+        plt.ylim(0, 2)
     else:
         plt.xlim(0, 8)
+        plt.ylim(0, 5)
     # plt.ylim(0, 20)
     plt.xlabel('r [A]')
-    plt.ylabel(f'$g_{atPairs}(r)$')
+    plt.ylabel(f'$g_{{{atPairs}}}(r)$')
     # plt.legend(['MgNa', 'NaCl', 'MgCl', 'ClCl'])
     # plt.legend(['0-40ps', '40-80ps'])
     # plt.legend(['0000', '0001'])
