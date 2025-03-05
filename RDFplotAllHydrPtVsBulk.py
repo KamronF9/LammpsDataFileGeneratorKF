@@ -16,7 +16,7 @@ folderPrefixes = [
 
 plotFile = "RDFallHydrTogetherQuad.pdf"
 
-fig, axs = plt.subplots(2, 2, figsize=(6, 6), dpi=300, sharey='row') 
+fig, axs = plt.subplots(2, 2, figsize=(5, 5), dpi=300, sharey='row') 
 # sharex='col', sharey='row'
 # , sharex=False, sharey=False
 
